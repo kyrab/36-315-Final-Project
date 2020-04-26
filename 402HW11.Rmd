@@ -1,0 +1,11 @@
+---
+title: "36-315 Final Project"
+author: "Kyra Balenzano, Evan Feder, David Yuan"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
