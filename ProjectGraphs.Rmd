@@ -11,14 +11,6 @@ knitr::opts_chunk$set(echo = FALSE)
 ```
 
 ```{r message = F, warning = F}
-spotify <- read.csv("spotify-2000.csv") # Load the data
-
-# Easier column names
-colnames(spotify)[1] <- "Index"
-colnames(spotify)[6] <- "BPM"
-colnames(spotify)[9] <- "Loudness"
-colnames(spotify)[12] <- "Duration"
-
 # Load the required libraries
 library(tidyverse)
 library(pander)
@@ -27,7 +19,15 @@ library(gridExtra)
 
 # DATA DESCRIPTION
 
-```{r}
+```{r message = F, warning = F}
+spotify <- read.csv("spotify-2000.csv") # Load the data
+
+# Easier column names
+colnames(spotify)[1] <- "Index"
+colnames(spotify)[6] <- "BPM"
+colnames(spotify)[9] <- "Loudness"
+colnames(spotify)[12] <- "Duration"
+
 # Cleaning up the genres column
 rock <- c("album rock", "alternative metal", "classic rock", "modern rock", 
           "alternative rock", "garage rock", "permanent wave", "modern folk rock",
@@ -63,26 +63,21 @@ spotify <- spotify %>%
                  ifelse(Top.Genre %in% indie, "indie",
                  ifelse(Top.Genre %in% hip_hop, "hiphop",
                         "other")))))) %>% 
+  # Adding decades column
+  mutate(Decade = ifelse(Year >= 1950 && Year <= 1969, "1950s-1960s", 
+                  ifelse(Year >= 1970 && Year <= 1979, "1970s",
+                  ifelse(Year >= 1980 && Year <= 1989, "1980s",
+                  ifelse(Year >= 1990 && Year <= 1999, "1990s",
+                  ifelse(Year >= 2000 && Year <= 2009, "2000s", "2010s")))))) %>% 
   mutate(Genre = factor(Genre),
-         Duration = as.integer(Duration)) %>% 
-  select(-Top.Genre)
+         Duration = as.integer(Duration),
+         Decade = factor(Decade)) %>% 
+  select(-c(Top.Genre))
 ```
 
-```{r}
-# Adding decades column:
+Here's some EDA: 
 
-findDecade = function(x) {
-  ifelse(x >= 1950 && x <= 1969, "1950s-1960s",
-    ifelse(x >= 1970 && x <= 1979, "1970s",
-      ifelse(x >= 1980 && x <= 1989, "1980s",
-        ifelse(x >= 1990 && x <= 1999, "1990s",
-          ifelse(x >= 2000 && x <= 2009, "2000s", "2010s")))))
-}
-
-spotify$Decade = sapply(spotify$Year, FUN = findDecade)
-```
-
-```{r}
+```{r warning = F, message = F}
 # EDA
 year.hist = ggplot(spotify, aes(x = Year)) + 
   geom_histogram(fill = "lightblue", color = "black", bins = 20)
@@ -107,11 +102,12 @@ speech.hist = ggplot(spotify, aes(x = Speechiness)) +
 pop.hist = ggplot(spotify, aes(x = Popularity)) + 
   geom_histogram(fill = "lightblue", color = "black", bins = 20)
 genre.bar = ggplot(spotify, aes(x = Genre, fill = Genre)) +
-  geom_bar(color = "black")
+  geom_bar(color = "black") +
+  theme(legend.position = "none", axis.text.x = element_text(angle = 90, hjust = 1))
 
 grid.arrange(year.hist, bpm.hist, energy.hist, dance.hist, loud.hist, live.hist,
              val.hist, len.hist, acou.hist, speech.hist, pop.hist, genre.bar, 
-             nrow = 3)
+             nrow = 4)
 ```
 
 
