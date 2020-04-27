@@ -61,6 +61,20 @@ spotify <- spotify %>%
 ```
 
 ```{r}
+# Adding decades column:
+
+findDecade = function(x) {
+  ifelse(x >= 1950 && x <= 1969, "1950s-1960s",
+    ifelse(x >= 1970 && x <= 1979, "1970s",
+      ifelse(x >= 1980 && x <= 1989, "1980s",
+        ifelse(x >= 1990 && x <= 1999, "1990s",
+          ifelse(x >= 2000 && x <= 2009, "2000s", "2010s")))))
+}
+
+spotify$Decade = sapply(spotify$Year, FUN = findDecade)
+```
+
+```{r}
 # EDA
 year.hist = ggplot(spotify, aes(x = Year)) + 
   geom_histogram(fill = "lightblue", color = "black", bins = 20)
