@@ -69,6 +69,20 @@ spotify <- spotify %>%
 ```
 
 ```{r}
+# Adding decades column:
+
+findDecade = function(x) {
+  ifelse(x >= 1950 && x <= 1969, "1950s-1960s",
+    ifelse(x >= 1970 && x <= 1979, "1970s",
+      ifelse(x >= 1980 && x <= 1989, "1980s",
+        ifelse(x >= 1990 && x <= 1999, "1990s",
+          ifelse(x >= 2000 && x <= 2009, "2000s", "2010s")))))
+}
+
+spotify$Decade = sapply(spotify$Year, FUN = findDecade)
+```
+
+```{r}
 # EDA
 year.hist = ggplot(spotify, aes(x = Year)) + 
   geom_histogram(fill = "lightblue", color = "black", bins = 20)
@@ -110,11 +124,14 @@ grid.arrange(year.hist, bpm.hist, energy.hist, dance.hist, loud.hist, live.hist,
   - Facetted histograms
   - Rap songs have more speechiness
   - Few songs have high liveness or acousticness
-  - 
+  - Most songs are loud
+  - Valence is uniformly distributed
 + What attributes make a song popular?
-  - Plot danceability vs. popularity
+  - Plot danceability vs. popularity? Separate by genre?
 + Have the attributes of songs that appear on the top 2000 list changed over time?
-  - MDS plot/dendrogram, comparison word cloud for top genre
+  - MDS plot/dendrogram to visualize similarity
+  - Comparison word cloud for top genres
+  - Time series plot of a particular attribute
 
 
 ***
