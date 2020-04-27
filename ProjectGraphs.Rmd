@@ -1,11 +1,74 @@
 ---
 title: "36-315 Final Project"
 author: "Kyra Balenzano, Evan Feder, David Yuan"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 ```
+
+```{r message = F, warning = F}
+spotify <- read.csv("spotify-2000.csv") # Load the data
+
+# Load the required libraries
+library(tidyverse)
+library(pander)
+```
+
+# DATA DESCRIPTION
+
+
+
+***
+
+# RESEARCH QUESTIONS
+
++ What attributes are associated with which genres?
++ What attributes make a song popular?
++ Have the attributes of songs that appear on the top 2000 list changed over time?
+
+***
+
+# GRAPHS
+
+## Question 1
+
+### Graph 1
+
+### Graph 2
+
+### Graph 3
+
+
+
+## Question 2
+
+### Graph 1
+
+### Graph 2
+
+### Graph 3
+
+
+
+## Question 3
+
+### Graph 1
+
+### Graph 2
+
+### Graph 3
+
+
+
+***
+
+# CONCLUSION
+
+
+
 
 
