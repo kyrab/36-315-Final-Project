@@ -13,6 +13,12 @@ knitr::opts_chunk$set(echo = FALSE)
 ```{r message = F, warning = F}
 spotify <- read.csv("spotify-2000.csv") # Load the data
 
+# Easier column names
+colnames(spotify)[1] <- "Index"
+colnames(spotify)[6] <- "BPM"
+colnames(spotify)[9] <- "Loudness"
+colnames(spotify)[12] <- "Duration"
+
 # Load the required libraries
 library(tidyverse)
 library(pander)
@@ -51,32 +57,34 @@ hip_hop <- c("alternative hip top", "detroit hip hop", "east coast hip hop",
              "dutch hip hop", "atl hip hop", "g funk", "gangster rap")
 
 spotify <- spotify %>% 
-  mutate(genre = ifelse(Top.Genre %in% rock, "rock",
+  mutate(Genre = ifelse(Top.Genre %in% rock, "rock",
                  ifelse(Top.Genre %in% pop, "pop",
                  ifelse(Top.Genre %in% country, "country",
                  ifelse(Top.Genre %in% indie, "indie",
                  ifelse(Top.Genre %in% hip_hop, "hiphop",
                         "other")))))) %>% 
-  mutate(genre = factor(genre))
+  mutate(Genre = factor(Genre),
+         Duration = as.integer(Duration)) %>% 
+  select(-Top.Genre)
 ```
 
 ```{r}
 # EDA
 year.hist = ggplot(spotify, aes(x = Year)) + 
   geom_histogram(fill = "lightblue", color = "black", bins = 20)
-bpm.hist = ggplot(spotify, aes(x = `Beats Per Minute (BPM)`)) + 
+bpm.hist = ggplot(spotify, aes(x = BPM)) + 
   geom_histogram(fill = "lightblue", color = "black", bins = 20)
 energy.hist = ggplot(spotify, aes(x = Energy)) + 
   geom_histogram(fill = "lightblue", color = "black", bins = 20)
 dance.hist = ggplot(spotify, aes(x = Danceability)) + 
   geom_histogram(fill = "lightblue", color = "black", bins = 20)
-loud.hist = ggplot(spotify, aes(x = `Loudness (dB)`)) + 
+loud.hist = ggplot(spotify, aes(x = Loudness)) + 
   geom_histogram(fill = "lightblue", color = "black", bins = 20)
 live.hist = ggplot(spotify, aes(x = Liveness)) + 
   geom_histogram(fill = "lightblue", color = "black", bins = 20)
 val.hist = ggplot(spotify, aes(x = Valence)) + 
   geom_histogram(fill = "lightblue", color = "black", bins = 20)
-len.hist = ggplot(spotify, aes(x = `Length (Duration)`)) + 
+len.hist = ggplot(spotify, aes(x = Duration)) + 
   geom_histogram(fill = "lightblue", color = "black", bins = 20)
 acou.hist = ggplot(spotify, aes(x = Acousticness)) + 
   geom_histogram(fill = "lightblue", color = "black", bins = 20)
@@ -84,9 +92,12 @@ speech.hist = ggplot(spotify, aes(x = Speechiness)) +
   geom_histogram(fill = "lightblue", color = "black", bins = 20)
 pop.hist = ggplot(spotify, aes(x = Popularity)) + 
   geom_histogram(fill = "lightblue", color = "black", bins = 20)
+genre.bar = ggplot(spotify, aes(x = Genre, fill = Genre)) +
+  geom_bar(color = "black")
 
 grid.arrange(year.hist, bpm.hist, energy.hist, dance.hist, loud.hist, live.hist,
-             val.hist, len.hist, acou.hist, speech.hist, pop.hist, nrow = 4)
+             val.hist, len.hist, acou.hist, speech.hist, pop.hist, genre.bar, 
+             nrow = 3)
 ```
 
 
