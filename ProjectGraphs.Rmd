@@ -20,17 +20,58 @@ library(pander)
 
 # DATA DESCRIPTION
 
+```{r}
+# EDA
+
+library(gridExtra)
+
+year.hist = ggplot(spotify, aes(x = Year)) + 
+  geom_histogram(fill = "lightblue", color = "black", bins = 20)
+bpm.hist = ggplot(spotify, aes(x = `Beats Per Minute (BPM)`)) + 
+  geom_histogram(fill = "lightblue", color = "black", bins = 20)
+energy.hist = ggplot(spotify, aes(x = Energy)) + 
+  geom_histogram(fill = "lightblue", color = "black", bins = 20)
+dance.hist = ggplot(spotify, aes(x = Danceability)) + 
+  geom_histogram(fill = "lightblue", color = "black", bins = 20)
+loud.hist = ggplot(spotify, aes(x = `Loudness (dB)`)) + 
+  geom_histogram(fill = "lightblue", color = "black", bins = 20)
+live.hist = ggplot(spotify, aes(x = Liveness)) + 
+  geom_histogram(fill = "lightblue", color = "black", bins = 20)
+val.hist = ggplot(spotify, aes(x = Valence)) + 
+  geom_histogram(fill = "lightblue", color = "black", bins = 20)
+len.hist = ggplot(spotify, aes(x = `Length (Duration)`)) + 
+  geom_histogram(fill = "lightblue", color = "black", bins = 20)
+acou.hist = ggplot(spotify, aes(x = Acousticness)) + 
+  geom_histogram(fill = "lightblue", color = "black", bins = 20)
+speech.hist = ggplot(spotify, aes(x = Speechiness)) + 
+  geom_histogram(fill = "lightblue", color = "black", bins = 20)
+pop.hist = ggplot(spotify, aes(x = Popularity)) + 
+  geom_histogram(fill = "lightblue", color = "black", bins = 20)
+
+grid.arrange(year.hist, bpm.hist, energy.hist, dance.hist, loud.hist, live.hist,
+             val.hist, len.hist, acou.hist, speech.hist, pop.hist, nrow = 4)
+```
 
 
+***
 ***
 
 # RESEARCH QUESTIONS
 
 + What attributes are associated with which genres?
+  - Facetted histograms
+  - Rap songs have more speechiness
+  - Few songs have high liveness or acousticness
+  - 
 + What attributes make a song popular?
+  - Plot danceability vs. popularity
 + Have the attributes of songs that appear on the top 2000 list changed over time?
+  - MDS plot/dendrogram, comparison word cloud for top genre
+
 
 ***
+***
+
 
 # GRAPHS
 
@@ -43,6 +84,8 @@ library(pander)
 ### Graph 3
 
 
+***
+
 
 ## Question 2
 
@@ -52,6 +95,8 @@ library(pander)
 
 ### Graph 3
 
+
+***
 
 
 ## Question 3
@@ -63,12 +108,9 @@ library(pander)
 ### Graph 3
 
 
-
+***
 ***
 
+
 # CONCLUSION
-
-
-
-
 
