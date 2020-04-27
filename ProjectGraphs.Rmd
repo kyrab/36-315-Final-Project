@@ -16,15 +16,52 @@ spotify <- read.csv("spotify-2000.csv") # Load the data
 # Load the required libraries
 library(tidyverse)
 library(pander)
+library(gridExtra)
 ```
 
 # DATA DESCRIPTION
 
 ```{r}
+# Cleaning up the genres column
+rock <- c("album rock", "alternative metal", "classic rock", "modern rock", 
+          "alternative rock", "garage rock", "permanent wave", "modern folk rock",
+          "irish rock", "art rock", "celtic rock", "dutch rock", "belgian rock",
+          "british invasion", "finnish metal", "dutch metal", "soft rock", "dutch prog",
+          "dance rock", "mellow gold", "glam metal", "australian rock", "australian psych",
+          "rock-and-roll", "glam rock", "hard rock", "punk", "j-core", "australian
+          alternative rock", "yacht rock", "celtic punk", "classic canadian rock",
+          "cyberpunk", "classical rock", "christelijk", "canadian rock", "british
+          alternative rock", "german alternative rock")
+pop <- c("alternative pop rock", "pop", "classic uk pop", "dance pop", "dutch pop",
+         "alternative dance", "german pop", "afropop", "disco", "danish pop rock",
+         "britpop", "neo mellow", "boy band", "hip pop", "australian pop", "canadian pop",
+         "bow pop", "acoustic pop", "candy pop", "operatic pop", "alternative pop",
+         "eurodance", "art pop", "uk pop", "brill building pop", "belgian pop",
+         "barbadian pop", "chamber pop", "indie pop", "electropop", "folk-pop",
+         "metropopolis", "irish pop", "australian dance", "nederpop", "danish pop",
+         "italian pop", "la pop", "baroque pop", "austropop", "ccm", "bubblegum pop",
+         "europop", "new wave pop", "german pop rock", "levenslied", "classic 
+         italian pop", "pop punk")
+country <- c("dutch americana", "arkansas country", "british folk", "blues rock",
+             "canadian folk", "contemporary country", "australian indie folk", 
+             "indie anthem-folk", "australian americana", "classic country pop",
+             "folk", "alternative country")
+indie <- c("dutch indie", "alaska indie", "icelandic indie")
+hip_hop <- c("alternative hip top", "detroit hip hop", "east coast hip hop", 
+             "dutch hip hop", "atl hip hop", "g funk", "gangster rap")
+
+spotify <- spotify %>% 
+  mutate(genre = ifelse(Top.Genre %in% rock, "rock",
+                 ifelse(Top.Genre %in% pop, "pop",
+                 ifelse(Top.Genre %in% country, "country",
+                 ifelse(Top.Genre %in% indie, "indie",
+                 ifelse(Top.Genre %in% hip_hop, "hiphop",
+                        "other")))))) %>% 
+  mutate(genre = factor(genre))
+```
+
+```{r}
 # EDA
-
-library(gridExtra)
-
 year.hist = ggplot(spotify, aes(x = Year)) + 
   geom_histogram(fill = "lightblue", color = "black", bins = 20)
 bpm.hist = ggplot(spotify, aes(x = `Beats Per Minute (BPM)`)) + 
