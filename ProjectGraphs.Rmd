@@ -18,6 +18,7 @@ library(gridExtra)
 library(wordcloud)
 library(tm)
 library(ggseas)
+library(dendextend)
 ```
 
 # DATA DESCRIPTION
@@ -59,13 +60,6 @@ indie <- c("dutch indie", "alaska indie", "icelandic indie")
 hip_hop <- c("alternative hip top", "detroit hip hop", "east coast hip hop", 
              "dutch hip hop", "atl hip hop", "g funk", "gangster rap")
 
-spotify <- spotify %>% 
-  mutate(Genre = ifelse(Top.Genre %in% rock, "rock",
-                 ifelse(Top.Genre %in% pop, "pop",
-                 ifelse(Top.Genre %in% country, "country",
-                 ifelse(Top.Genre %in% indie, "indie",
-                 ifelse(Top.Genre %in% hip_hop, "hiphop", "other"))))))
-
 findDecade = function(x) {
   ifelse(x >= 1950 && x <= 1969, "1950s-60s", 
     ifelse(x >= 1970 && x <= 1979, "1970s",
@@ -82,10 +76,16 @@ spotify$Decade = sapply(spotify$Year, FUN = findDecade)
 spotify$Range = sapply(spotify$Year, FUN = findRange)
 
 spotify = spotify %>%
+  mutate(Genre = ifelse(Top.Genre %in% rock, "rock",
+                 ifelse(Top.Genre %in% pop, "pop",
+                 ifelse(Top.Genre %in% country, "country",
+                 ifelse(Top.Genre %in% indie, "indie",
+                 ifelse(Top.Genre %in% hip_hop, "hiphop", "other")))))) %>% 
   mutate(Genre = factor(Genre),
          Duration = as.integer(Duration),
          Decade = factor(Decade),
-         Range = factor(Range))
+         Range = factor(Range)) %>% 
+  select(-Top.Genre)
 ```
 
 Here's some EDA: 
@@ -123,7 +123,6 @@ grid.arrange(year.hist, bpm.hist, energy.hist, dance.hist, loud.hist, live.hist,
              nrow = 4)
 ```
 
-
 ***
 ***
 
@@ -142,10 +141,8 @@ grid.arrange(year.hist, bpm.hist, energy.hist, dance.hist, loud.hist, live.hist,
   - Comparison word cloud for top genres
   - Time series plot of a particular attribute
 
-
 ***
 ***
-
 
 # GRAPHS
 
@@ -153,13 +150,56 @@ grid.arrange(year.hist, bpm.hist, energy.hist, dance.hist, loud.hist, live.hist,
 
 ### Graph 1
 
+```{r}
+ggplot(spotify %>% filter(Genre != "other"), aes(x = Energy)) + 
+  geom_histogram() +
+  facet_wrap(~ Genre, ncol = 1)
+
+ggplot(spotify %>% filter(Genre != "other"), aes(x = Danceability)) + 
+  geom_histogram() +
+  facet_wrap(~ Genre, ncol = 1)
+
+ggplot(spotify %>% filter(Genre != "other"), aes(x = Popularity)) + 
+  geom_histogram() +
+  facet_wrap(~ Genre, ncol = 1)
+```
+
+Of the 10 quantitative variables in this dataset, it seems like only Energy, Danceability, and Popularity show a clear difference between the different genres (Note that for the above graphs, we have removed the "other" genre, since it encompasses too many miscellaneous songs and does not provide useful inforation). Within those three, it seems like country songs tend to have lower Energy than songs of other genres, hip hop songs tend to have higher Danceability than songs of other genres, and indie songs tend to have lower Popularity than songs of other genres. Note, however, that our sample size for the hip hop, indie, and country genres is relatively small, so the conclusions drawn here are not necessarily meaningful.
+
 ### Graph 2
+
+```{r}
+spotify %>% 
+  filter(Genre != "other") %>% 
+  select(Energy, Danceability, Popularity) %>% 
+  apply(MARGIN = 2, FUN = function(x) x/sd(x)) %>% 
+  dist %>% 
+  hclust(method = "complete") %>% 
+  as.dendrogram %>% 
+  set("branches_k_color", k=5) %>% 
+  set("labels_colors", order_value = TRUE, 
+      ifelse(spotify %>% filter(Genre != "other") %>% pull(Genre) == "country", "brown",
+        ifelse(spotify %>% filter(Genre != "other") %>% pull(Genre) == "hiphop", "red",
+          ifelse(spotify %>% filter(Genre != "other") %>% pull(Genre) == "indie", "purple",
+            ifelse(spotify %>% filter(Genre != "other") %>% pull(Genre) == "pop", "green",
+              "blue"))))) %>% 
+  plot(main = "Spotify Dendrogram")
+```
+
+This dendrogram, made based off of the three variables described above, appears to show very little difference between the five genres. Each of the clusters appears to somewhat similarly distributed. Also, a majority of the data is categorized as `rock`, as our EDA shows.
 
 ### Graph 3
 
+```{r}
+ggplot(spotify %>% filter(Genre != "other"), aes(x = Popularity, y = Danceability)) + 
+  geom_point(aes(color = Genre)) + 
+  geom_density2d() + 
+  labs(title = "Popularity and Danceability by Genre")
+```
+
+Again, this graph appears to show very little difference between the genres. There appears to just be one cluster, containing all of the genres somewhat uniformly. Again, this verifies that we have more rock songs than anything else in this dataset.
 
 ***
-
 
 ## Question 2: Popularity
 
