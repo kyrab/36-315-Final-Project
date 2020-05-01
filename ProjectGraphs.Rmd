@@ -260,6 +260,11 @@ ggplot(data = spotify, aes(x = mds1, y = mds2)) +
        title = "MDS Coordinate 2 vs. MDS Coordinate 1")
 ```
 
+Lecture 18 R Demo -- arrow plot thing, making ellipses around the clusters.
+PCA -- arrows.
+
+Use statistical analyses -- t tests in terms of x variable.
+
 Interpretation: songs from 1990s-2010s have similar qualitative characteristics, and so do songs from 1950s-1980s, since we can see how blue dots are mostly concentrated on the bottom and red dots are mostly concentrated on the top.
 
 ```{r, warning = FALSE, message = FALSE}
@@ -313,6 +318,8 @@ comparison.cloud(tdm.titleAll.sum, random.order = FALSE, rot.per = 0.3,
                  colors = c("blue", "green"), max.words = 200)
 ```
 
+Note limitations
+
 Interpretation: there are a few song genres that almost exclusively appear in the 1950s-1980s, such as "adult standards," "classic rock," "album," and "eurpop." Meanwhile, "alternative," "dutch," "modern," and "pop" music seem to be more popular genres in the era 1990s-2010s. Some genres such as "jazz" are more common in the 1990s-2010s but since it is small, it also appears in the 1950s-1980s a lot.
 
 ```{r}
@@ -349,11 +356,13 @@ average = spotify %>%
 
 ggplot(data = average, aes(x = Year, y = avg)) +
   geom_line(color = "red") +
-  stat_rollapplyr(width = 10, align = "right", size = 2, alpha = .4) + 
+  stat_rollapplyr(width = 4, align = "right", size = 2, alpha = .4) + 
   labs(title = "Median Danceability vs. Year",
-       subtitle = "Width = 10",
+       subtitle = "Width = 4",
        x = "Year", y = "Median Danceability")
 ```
+
+Make sure the lines overlap.
 
 Interpretation: median danceability comes in waves. From the 1950s-1970s, it was pretty low, but increased from 1980s-1990s, before decreasing again before 2000, and increasing since then.
 
