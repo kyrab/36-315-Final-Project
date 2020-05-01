@@ -199,6 +199,39 @@ ggplot(spotify %>% filter(Genre != "other"), aes(x = Popularity, y = Danceabilit
 
 Again, this graph appears to show very little difference between the genres. There appears to just be one cluster, containing all of the genres somewhat uniformly. Again, this verifies that we have more rock songs than anything else in this dataset.
 
+### Graph 2
+
+```{r}
+spotify %>% 
+  filter(Genre != "other") %>% 
+  select(Energy, Danceability, Popularity) %>% 
+  apply(MARGIN = 2, FUN = function(x) x/sd(x)) %>% 
+  dist %>% 
+  hclust(method = "complete") %>% 
+  as.dendrogram %>% 
+  set("branches_k_color", k=5) %>% 
+  set("labels_colors", order_value = TRUE, 
+      ifelse(spotify %>% filter(Genre != "other") %>% pull(Genre) == "country", "brown",
+        ifelse(spotify %>% filter(Genre != "other") %>% pull(Genre) == "hiphop", "red",
+          ifelse(spotify %>% filter(Genre != "other") %>% pull(Genre) == "indie", "purple",
+            ifelse(spotify %>% filter(Genre != "other") %>% pull(Genre) == "pop", "green",
+              "blue"))))) %>% 
+  plot(main = "Spotify Dendrogram")
+```
+
+This dendrogram, made based off of the three variables described above, appears to show very little difference between the five genres. Each of the clusters appears to somewhat similarly distributed. Also, a majority of the data is categorized as `rock`, as our EDA shows.
+
+### Graph 3
+
+```{r}
+ggplot(spotify %>% filter(Genre != "other"), aes(x = Popularity, y = Danceability)) + 
+  geom_point(aes(color = Genre)) + 
+  geom_density2d() + 
+  labs(title = "Popularity and Danceability by Genre")
+```
+
+Again, this graph appears to show very little difference between the genres. There appears to just be one cluster, containing all of the genres somewhat uniformly. Again, this verifies that we have more rock songs than anything else in this dataset.
+
 ***
 
 ## Question 2: Popularity
