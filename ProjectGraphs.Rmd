@@ -79,7 +79,7 @@ findRange = function(x) {
 }
 
 spotify$Decade = sapply(spotify$Year, FUN = findDecade)
-spotify$Range1 = sapply(spotify$Year, FUN = findRange)
+spotify$Range = sapply(spotify$Year, FUN = findRange)
 
 spotify = spotify %>%
   mutate(Genre = factor(Genre),
