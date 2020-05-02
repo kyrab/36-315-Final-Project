@@ -109,9 +109,7 @@ Using our dataset, we would like to answer three main questions:
 ***
 ***
 
-# Graphs
-
-## Question 1: Genres
+## Research Question 1: Genres
 
 In order to answer the first research question, we ______.
 
@@ -168,7 +166,7 @@ Again, this graph appears to show very little difference between the genres. The
 
 ***
 
-## Question 2: Popularity
+## Research Question 2: Popularity
 
 ### Graph 1
 
@@ -197,11 +195,13 @@ wordcloud(words = artists.words, freq = artists.freqs,
 
 ***
 
-## Question 3: Time
+## Research Question 3: Time
 
 The third research question mainly concerns itself with time trends. Therefore, we explored various song attributes in the context of the Year, Decade, or Decade Range in which it was released.
 
 ### Graph 1
+
+(Probably the one I would vote to go first due to the nuance of analysis needed)
 
 Since we have so many quantitative variables, we first conducted principal component analysis (PCA). We then made a graph plotting the first two components, and colored our datapoints by the Decade Range variable so that we could make some comparisons regarding time without clouding the graph with too many overlapping colors.
 
@@ -282,11 +282,11 @@ comparison.cloud(tdm.titleAll.sum, random.order = FALSE, rot.per = 0.3,
                  colors = c("blue", "green"), max.words = 200)
 ```
 
-From this word cloud, there are a few song genres that almost exclusively appear in the 1950s-1980s, such as "adult standards," "classic rock," "album," and "eurpop." Meanwhile, "alternative," "dutch," "modern," and "pop" music seem to be more popular genres in the era 1990s-2010s. Some genres such as "dance" are more common in the 1990s-2010s but since it is small, this means that it appeared in the 1950s-1980s almost as frequently.
+From this word cloud, there are a few song genres that almost exclusively appeared in the 1950s-1980s, such as "adult standards," "classic rock," "album," and "eurpop." Meanwhile, "alternative," "modern," and "pop" music seem to be more popular genres in the 1990s-2010s. So, even though we grouped multiple decades together, making us unable to analyze how top genres may or may not have changed decade-to-decade, it is clear that the top genres have changed from one time period to another.
 
 ### Graph 3
 
-To more closely monitor how a single attribute has changed over time, we constructed a time series plot with decomposition measuring Danceability.
+To more closely monitor how a single attribute has changed over time, we constructed a time series plot with decomposition measuring median Danceability.
 
 ```{r}
 ######### TIME SERIES #########
@@ -302,11 +302,11 @@ ggsdc(data = average, aes(x = Year, y = avg),
   labs(x = "Start Date", y = "Median Danceability")
 ```
 
-The global trend can be seen in the second facet, which shows that Danceability was low until the 1970s, reached a peak around 1980, decreased from the late 1980s and 1990s, and has been steadily increasing since 2000. The seasonal trend can be seen in the third facet. The up-and-down nature of this plot suggests that Danceability falls in cycles that last about 5 years. Perhaps the main takeaway from this graph is therefore that not only does Danceability come in waves over the span of decades, but it also comes in waves between years.
+The global trend can be seen in the second facet, which shows that the median Danceability was low until the 1970s, reached a peak around 1980, decreased from the late 1980s and 1990s, and has been steadily increasing since 2000. The seasonal trend can be seen in the third facet. The up-and-down nature of this plot suggests that Danceability falls in cycles that last about 5 years. Therefore, the main takeaway from this graph is that not only does Danceability come in waves over the span of decades, but it also comes in waves between years.
 
 ***
 ***
 
 # Conclusions
 
-Finally, we can conclude that .
+Finally, we can conclude that.
