@@ -1,0 +1,199 @@
+---
+title: "35-315 Final Project Report"
+author: "Kyra Balenzano, Evan Feder, David Yuan"
+date: "5/2/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r message = F, warning = F}
+# Load the required libraries
+library(tidyverse)
+library(pander)
+library(gridExtra)
+library(wordcloud)
+library(tm)
+library(ggseas)
+library(dendextend)
+library(devtools)
+#install_github("vqv/ggbiplot")
+library(ggbiplot)
+```
+
+```{r message = F, warning = F}
+spotify <- read.csv("spotify-2000.csv") # Load the data
+
+# Easier column names
+colnames(spotify)[1] <- "Index"
+colnames(spotify)[6] <- "BPM"
+colnames(spotify)[9] <- "Loudness"
+colnames(spotify)[12] <- "Duration"
+
+# Cleaning up the genres column
+rock <- c("album rock", "alternative metal", "classic rock", "modern rock", 
+          "alternative rock", "garage rock", "permanent wave", "modern folk rock",
+          "irish rock", "art rock", "celtic rock", "dutch rock", "belgian rock",
+          "british invasion", "finnish metal", "dutch metal", "soft rock", "dutch prog",
+          "dance rock", "mellow gold", "glam metal", "australian rock", "australian psych",
+          "rock-and-roll", "glam rock", "hard rock", "punk", "j-core", "australian
+          alternative rock", "yacht rock", "celtic punk", "classic canadian rock",
+          "cyberpunk", "classical rock", "christelijk", "canadian rock", "british
+          alternative rock", "german alternative rock")
+pop <- c("alternative pop rock", "pop", "classic uk pop", "dance pop", "dutch pop",
+         "alternative dance", "german pop", "afropop", "disco", "danish pop rock",
+         "britpop", "neo mellow", "boy band", "hip pop", "australian pop", "canadian pop",
+         "bow pop", "acoustic pop", "candy pop", "operatic pop", "alternative pop",
+         "eurodance", "art pop", "uk pop", "brill building pop", "belgian pop",
+         "barbadian pop", "chamber pop", "indie pop", "electropop", "folk-pop",
+         "metropopolis", "irish pop", "australian dance", "nederpop", "danish pop",
+         "italian pop", "la pop", "baroque pop", "austropop", "ccm", "bubblegum pop",
+         "europop", "new wave pop", "german pop rock", "levenslied", "classic 
+         italian pop", "pop punk")
+country <- c("dutch americana", "arkansas country", "british folk", "blues rock",
+             "canadian folk", "contemporary country", "australian indie folk", 
+             "indie anthem-folk", "australian americana", "classic country pop",
+             "folk", "alternative country")
+indie <- c("dutch indie", "alaska indie", "icelandic indie")
+hip_hop <- c("alternative hip top", "detroit hip hop", "east coast hip hop", 
+             "dutch hip hop", "atl hip hop", "g funk", "gangster rap")
+
+findDecade = function(x) {
+  ifelse(x >= 1950 && x <= 1969, "1950s-60s", 
+    ifelse(x >= 1970 && x <= 1979, "1970s",
+      ifelse(x >= 1980 && x <= 1989, "1980s",
+        ifelse(x >= 1990 && x <= 1999, "1990s",
+          ifelse(x >= 2000 && x <= 2009, "2000s", "2010s")))))
+}
+
+findRange = function(x) {
+  ifelse(x >= 1950 && x <= 1989, "1950s-1980s", "1990s-2010s")
+}
+
+spotify$Decade = sapply(spotify$Year, FUN = findDecade)
+spotify$Range = sapply(spotify$Year, FUN = findRange)
+
+spotify = spotify %>%
+  mutate(Genre = ifelse(Top.Genre %in% rock, "rock",
+                 ifelse(Top.Genre %in% pop, "pop",
+                 ifelse(Top.Genre %in% country, "country",
+                 ifelse(Top.Genre %in% indie, "indie",
+                 ifelse(Top.Genre %in% hip_hop, "hiphop", "other")))))) %>% 
+  mutate(Genre = factor(Genre),
+         Duration = as.integer(Duration),
+         Decade = factor(Decade),
+         Range = factor(Range))
+```
+
+## Question 3: Time
+
+```{r, warning = FALSE, message = FALSE}
+######### MDS PLOT #########
+
+# Just include qualitative variables for MDS
+spotify.subset = spotify %>% 
+  select(-c(Index, Title, Artist, Top.Genre, Genre, Decade, Range))
+
+spotify.scaled = apply(spotify.subset, MARGIN = 2, FUN = function(x) x/sd(x))
+spotify.scaled.dist = dist(spotify.scaled)
+
+mds = cmdscale(d = spotify.scaled.dist, k = 2)
+spotify$mds1 = mds[,1]
+spotify$mds2 = mds[,2]
+```
+
+```{r}
+ggplot(data = spotify, aes(x = mds1, y = mds2)) +
+  geom_point(aes(color = Range), size = 0.75) +
+  labs(x = "MDS Coordinate 1", y = "MDS Coordinate 2",
+       title = "MDS Coordinate 2 vs. MDS Coordinate 1")
+```
+
+```{r}
+######### PCA PLOT #########
+
+# From R Demo, Lecture 18:
+spotify.center = apply(spotify.subset, MARGIN = 2, FUN = function(x) x - mean(x))
+spotify.standard = apply(spotify.center, MARGIN = 2, FUN = function(x) x/sd(x))
+
+spotify.pca = prcomp(spotify.standard, center = TRUE, scale. = TRUE)
+rotation.pca = as.matrix(spotify.pca$rotation)
+
+# Compute Gamma vectors, which is defined as X \times rotation:
+prinComps = as.matrix(spotify.standard) %*% rotation.pca
+dim(prinComps)
+apply(prinComps, MARGIN = 2, FUN = sd)
+```
+
+```{r}
+# First two dimensions of PCA
+ggbiplot(spotify.pca, groups = spotify$Range, alpha = 0.5) +
+  labs(color = "Decade Range",
+       x = "Standardized PC1 (24.2% explained var.)",
+       y = "Standardized PC2 (14.5% explained var.)")
+```
+
+```{r}
+# Here is the proportion of variance accounted by each principal component:
+varProps = summary(spotify.pca)$importance["Proportion of Variance",]
+# Draw the line
+plot(1:ncol(spotify.standard), varProps, type = "l",
+     xlab = "Component Number", ylab = "Proportion of Variation")
+# Add the points
+points(1:ncol(spotify.standard), varProps, pch = 16)
+```
+
+Notes:
+Lecture 18 R Demo -- arrow plot thing, making ellipses around the clusters.
+PCA -- arrows.
+Note that scree plot suggests use of third dimension but we did not use.
+Use statistical analyses -- t tests in terms of x variable.
+
+```{r}
+######### MULTICOLORED DENSITY CURVE #########
+
+#findRange2 = function(x) {
+#  ifelse(x == "1950s-60s" || x == "1970s", "1950s-70s",
+#    ifelse(x == "1980s" || x == "1990s", "1980s-90s", "2000s-10s"))
+#}
+
+#spotify$Range2 = sapply(spotify$Decade, FUN = findRange2)
+```
+
+```{r}
+# Also good: Popularity, Valence w/ Range. Mediocre: Energy, Loudness.
+# Bad: Liveness, Acousticness, Speechiness, Danceability
+
+ggplot(data = spotify, aes(x = Duration, color = Decade)) +
+  geom_density(size = 1.25) +
+  labs(color = "Range")
+```
+
+Interpretation: song duration has changed throughout the decades. All are right skewed but 1950s-1960s seemed to have the smallest duration mode, followed by 1970s, 2010s, 2000s, 1980s, and then 1990s. Seemed to have cycled around.
+
+```{r}
+######### TIME SERIES #########
+average = spotify %>% 
+  group_by(Year) %>% 
+  dplyr::summarize(avg = median(Danceability))
+```
+
+```{r, warning = FALSE, message = FALSE}
+# Also good: Loudness, Energy, Popularity
+
+ggplot(data = average, aes(x = Year, y = avg)) +
+  geom_line(color = "red") +
+  stat_rollapplyr(width = 4, align = "right", size = 2, alpha = .4) + 
+  labs(title = "Median Danceability vs. Year",
+       subtitle = "Width = 4",
+       x = "Year", y = "Median Danceability")
+```
+
+Note limitations!!
+
+# Conclusions
+
+Future work: adding and interpreting a third dimension to the PCA plot. Adding the third dimension has been learned, but not yet interpreting. Explore every quantitative variable in time analysis individually.
+

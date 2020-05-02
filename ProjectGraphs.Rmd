@@ -19,9 +19,11 @@ library(wordcloud)
 library(tm)
 library(ggseas)
 library(dendextend)
+library(devtools)
+#install_github("vqv/ggbiplot")
+library(ggbiplot)
+library(dplyr)
 ```
-
-# DATA DESCRIPTION
 
 ```{r message = F, warning = F}
 spotify <- read.csv("spotify-2000.csv") # Load the data
@@ -84,69 +86,34 @@ spotify = spotify %>%
   mutate(Genre = factor(Genre),
          Duration = as.integer(Duration),
          Decade = factor(Decade),
-         Range = factor(Range)) %>% 
-  select(-Top.Genre)
+         Range = factor(Range))
 ```
 
-Here's some EDA: 
+# Data Description
 
-```{r warning = F, message = F}
-# EDA
-year.hist = ggplot(spotify, aes(x = Year)) + 
-  geom_histogram(fill = "lightblue", color = "black", bins = 20)
-bpm.hist = ggplot(spotify, aes(x = BPM)) + 
-  geom_histogram(fill = "lightblue", color = "black", bins = 20)
-energy.hist = ggplot(spotify, aes(x = Energy)) + 
-  geom_histogram(fill = "lightblue", color = "black", bins = 20)
-dance.hist = ggplot(spotify, aes(x = Danceability)) + 
-  geom_histogram(fill = "lightblue", color = "black", bins = 20)
-loud.hist = ggplot(spotify, aes(x = Loudness)) + 
-  geom_histogram(fill = "lightblue", color = "black", bins = 20)
-live.hist = ggplot(spotify, aes(x = Liveness)) + 
-  geom_histogram(fill = "lightblue", color = "black", bins = 20)
-val.hist = ggplot(spotify, aes(x = Valence)) + 
-  geom_histogram(fill = "lightblue", color = "black", bins = 20)
-len.hist = ggplot(spotify, aes(x = Duration)) + 
-  geom_histogram(fill = "lightblue", color = "black", bins = 20)
-acou.hist = ggplot(spotify, aes(x = Acousticness)) + 
-  geom_histogram(fill = "lightblue", color = "black", bins = 20)
-speech.hist = ggplot(spotify, aes(x = Speechiness)) + 
-  geom_histogram(fill = "lightblue", color = "black", bins = 20)
-pop.hist = ggplot(spotify, aes(x = Popularity)) + 
-  geom_histogram(fill = "lightblue", color = "black", bins = 20)
-genre.bar = ggplot(spotify, aes(x = Genre, fill = Genre)) +
-  geom_bar(color = "black") +
-  theme(legend.position = "none", axis.text.x = element_text(angle = 90, hjust = 1))
-
-grid.arrange(year.hist, bpm.hist, energy.hist, dance.hist, loud.hist, live.hist,
-             val.hist, len.hist, acou.hist, speech.hist, pop.hist, genre.bar, 
-             nrow = 4)
-```
+The "Spotify: All Time Top 2000 Mega Dataset" is a dataset from [Kaggle](https://www.kaggle.com/iamsumat/spotify-top-2000s-mega-dataset) that contains various audio statistics and ratings of the top 1994 songs on Spotify. For each song, it includes information such as the Title, Artist, Year of release, Top Genre, BPM (beats per minute), and Duration. It also includes various ratings, such as those measuring its level of Energy, Danceability, Loudness, Liveness, Valence, Acousticness, Speechiness, and Popularity. We manually added additional Genre, Decade, and Decade Range columns so that we could cluster songs into fewer groups, which will make our analyses more clear.
 
 ***
 ***
 
-# RESEARCH QUESTIONS
+# Research Questions
 
-+ What attributes are associated with which genres?
-  - Facetted histograms
-  - Rap songs have more speechiness
-  - Few songs have high liveness or acousticness
-  - Most songs are loud
-  - Valence is uniformly distributed
+Using our dataset, we would like to answer three main questions:
+
++ Which attributes are associated with which genres?
+
 + What attributes make a song popular?
-  - Plot danceability vs. popularity? Separate by genre?
-+ Have the attributes of songs that appear on the top 2000 list changed over time?
-  - MDS plot/dendrogram to visualize similarity
-  - Comparison word cloud for top genres
-  - Time series plot of a particular attribute
+
++ How have the attributes of songs that appear on the top 2000 list changed over time?
 
 ***
 ***
 
-# GRAPHS
+# Graphs
 
 ## Question 1: Genres
+
+In order to answer the first research question, we ______.
 
 ### Graph 1
 
@@ -164,40 +131,7 @@ ggplot(spotify %>% filter(Genre != "other"), aes(x = Popularity)) +
   facet_wrap(~ Genre, ncol = 1)
 ```
 
-Of the 10 quantitative variables in this dataset, it seems like only Energy, Danceability, and Popularity show a clear difference between the different genres (Note that for the above graphs, we have removed the "other" genre, since it encompasses too many miscellaneous songs and does not provide useful inforation). Within those three, it seems like country songs tend to have lower Energy than songs of other genres, hip hop songs tend to have higher Danceability than songs of other genres, and indie songs tend to have lower Popularity than songs of other genres. Note, however, that our sample size for the hip hop, indie, and country genres is relatively small, so the conclusions drawn here are not necessarily meaningful.
-
-### Graph 2
-
-```{r}
-spotify %>% 
-  filter(Genre != "other") %>% 
-  select(Energy, Danceability, Popularity) %>% 
-  apply(MARGIN = 2, FUN = function(x) x/sd(x)) %>% 
-  dist %>% 
-  hclust(method = "complete") %>% 
-  as.dendrogram %>% 
-  set("branches_k_color", k=5) %>% 
-  set("labels_colors", order_value = TRUE, 
-      ifelse(spotify %>% filter(Genre != "other") %>% pull(Genre) == "country", "brown",
-        ifelse(spotify %>% filter(Genre != "other") %>% pull(Genre) == "hiphop", "red",
-          ifelse(spotify %>% filter(Genre != "other") %>% pull(Genre) == "indie", "purple",
-            ifelse(spotify %>% filter(Genre != "other") %>% pull(Genre) == "pop", "green",
-              "blue"))))) %>% 
-  plot(main = "Spotify Dendrogram")
-```
-
-This dendrogram, made based off of the three variables described above, appears to show very little difference between the five genres. Each of the clusters appears to somewhat similarly distributed. Also, a majority of the data is categorized as `rock`, as our EDA shows.
-
-### Graph 3
-
-```{r}
-ggplot(spotify %>% filter(Genre != "other"), aes(x = Popularity, y = Danceability)) + 
-  geom_point(aes(color = Genre)) + 
-  geom_density2d() + 
-  labs(title = "Popularity and Danceability by Genre")
-```
-
-Again, this graph appears to show very little difference between the genres. There appears to just be one cluster, containing all of the genres somewhat uniformly. Again, this verifies that we have more rock songs than anything else in this dataset.
+Of the 10 quantitative variables in this dataset, it seems like only Energy, Danceability, and Popularity show a clear difference between the different overall genres (Note that for the above graphs, we have removed the "other" genre, since it encompasses too many miscellaneous songs and does not provide useful information). Within those three, it seems like country songs tend to have lower Energy than songs of other genres, hip hop songs tend to have higher Danceability than songs of other genres, and indie songs tend to have lower Popularity than songs of other genres. Note, however, that our sample size for the hip hop, indie, and country genres is relatively small, so the conclusions drawn here are not necessarily meaningful.
 
 ### Graph 2
 
@@ -265,40 +199,37 @@ wordcloud(words = artists.words, freq = artists.freqs,
 
 ## Question 3: Time
 
+The third research question mainly concerns itself with time trends. Therefore, we explored various song attributes in the context of the Year, Decade, or Decade Range in which it was released.
+
 ### Graph 1
 
-### Graph 2
+Since we have so many quantitative variables, we first conducted principal component analysis (PCA). We then made a graph plotting the first two components, and colored our datapoints by the Decade Range variable so that we could make some comparisons regarding time without clouding the graph with too many overlapping colors.
 
-### Graph 3
-
-```{r, warning = FALSE, message = FALSE}
-######### MDS PLOT #########
-
-# Just include qualitative variables for MDS
+```{r}
+######### PCA PLOT #########
 spotify.subset = spotify %>% 
   select(-c(Index, Title, Artist, Top.Genre, Genre, Decade, Range))
 
-spotify.scaled = apply(spotify.subset, MARGIN = 2, FUN = function(x) x/sd(x))
-spotify.scaled.dist = dist(spotify.scaled)
+# From R Demo, Lecture 18:
+spotify.center = apply(spotify.subset, MARGIN = 2, FUN = function(x) x - mean(x))
+spotify.standard = apply(spotify.center, MARGIN = 2, FUN = function(x) x/sd(x))
 
-mds = cmdscale(d = spotify.scaled.dist, k = 2)
-spotify$mds1 = mds[,1]
-spotify$mds2 = mds[,2]
+spotify.pca = prcomp(spotify.standard, center = TRUE, scale. = TRUE)
 ```
 
 ```{r}
-ggplot(data = spotify, aes(x = mds1, y = mds2)) +
-  geom_point(aes(color = Range), size = 0.75) +
-  labs(x = "MDS Coordinate 1", y = "MDS Coordinate 2",
-       title = "MDS Coordinate 2 vs. MDS Coordinate 1")
+# First two dimensions of PCA
+ggbiplot(spotify.pca, ellipse = TRUE, groups = spotify$Range, alpha = 0.5) +
+  labs(color = "Decade Range",
+       x = "Standardized PC1 (24.2% explained var.)",
+       y = "Standardized PC2 (14.5% explained var.)")
 ```
 
-Lecture 18 R Demo -- arrow plot thing, making ellipses around the clusters.
-PCA -- arrows.
+We can see that Decade Range slightly clusters by the first two components, since there are mostly blue datapoints on the top and mostly red datapoints on the bottom. One example of a conclusion that can be drawn from the graph is that as BPM increases, both PC1 decreases and PC2 increases; furthermore, songs from the 1990s-2010s tend to have a greater number of beats per minute than songs from the 1950s-1980s. That being said, since the Normal distribution ellipses overlap quite a bit, there is not enough evidence to conclude that the two groups are significantly different with respect to their principal components.
 
-Use statistical analyses -- t tests in terms of x variable.
+### Graph 2
 
-Interpretation: songs from 1990s-2010s have similar qualitative characteristics, and so do songs from 1950s-1980s, since we can see how blue dots are mostly concentrated on the bottom and red dots are mostly concentrated on the top.
+To address some of our quantative variables, we made a comparison word cloud between the top genres of songs from the 1950s to the 1980s and the top genres of songs from the 1990s to the 2010s to provide insight on how the top genres have changed, if at all, between these two eras.
 
 ```{r, warning = FALSE, message = FALSE}
 ######### COMPARISON WORD CLOUD #########
@@ -351,65 +282,31 @@ comparison.cloud(tdm.titleAll.sum, random.order = FALSE, rot.per = 0.3,
                  colors = c("blue", "green"), max.words = 200)
 ```
 
-Note limitations
+From this word cloud, there are a few song genres that almost exclusively appear in the 1950s-1980s, such as "adult standards," "classic rock," "album," and "eurpop." Meanwhile, "alternative," "dutch," "modern," and "pop" music seem to be more popular genres in the era 1990s-2010s. Some genres such as "dance" are more common in the 1990s-2010s but since it is small, this means that it appeared in the 1950s-1980s almost as frequently.
 
-Interpretation: there are a few song genres that almost exclusively appear in the 1950s-1980s, such as "adult standards," "classic rock," "album," and "eurpop." Meanwhile, "alternative," "dutch," "modern," and "pop" music seem to be more popular genres in the era 1990s-2010s. Some genres such as "jazz" are more common in the 1990s-2010s but since it is small, it also appears in the 1950s-1980s a lot.
+### Graph 3
 
-```{r}
-######### MULTICOLORED DENSITY CURVE #########
-
-findRange2 = function(x) {
-  ifelse(x == "1950s-60s" || x == "1970s", "1950s-70s",
-    ifelse(x == "1980s" || x == "1990s", "1980s-90s", "2000s-10s"))
-}
-
-spotify$Range2 = sapply(spotify$Decade, FUN = findRange2)
-```
-
-```{r}
-# Also good: Popularity, Valence w/ Range. Mediocre: Energy, Loudness.
-# Bad: Liveness, Acousticness, Speechiness, Danceability
-
-ggplot(data = spotify, aes(x = Duration, color = Decade)) +
-  geom_density(size = 1.25) +
-  labs(color = "Range")
-```
-
-Interpretation: song duration has changed throughout the decades. All are right skewed but 1950s-1960s seemed to have the smallest duration mode, followed by 1970s, 2010s, 2000s, 1980s, and then 1990s. Seemed to have cycled around.
+To more closely monitor how a single attribute has changed over time, we constructed a time series plot with decomposition measuring Danceability.
 
 ```{r}
 ######### TIME SERIES #########
 average = spotify %>% 
   group_by(Year) %>% 
-  summarize(avg = median(Danceability))
+  dplyr::summarize(avg = median(Danceability))
 ```
 
 ```{r, warning = FALSE, message = FALSE}
-# Also good: Loudness, Energy, Popularity
-
-ggplot(data = average, aes(x = Year, y = avg)) +
-  geom_line(color = "red") +
-  stat_rollapplyr(width = 4, align = "right", size = 2, alpha = .4) + 
-  labs(title = "Median Danceability vs. Year",
-       subtitle = "Width = 4",
-       x = "Year", y = "Median Danceability")
+ggsdc(data = average, aes(x = Year, y = avg),
+      frequency = 5, method = "stl", s.window = 7) +
+  geom_line() +
+  labs(x = "Start Date", y = "Median Danceability")
 ```
 
-Make sure the lines overlap.
-
-Interpretation: median danceability comes in waves. From the 1950s-1970s, it was pretty low, but increased from 1980s-1990s, before decreasing again before 2000, and increasing since then.
+The global trend can be seen in the second facet, which shows that Danceability was low until the 1970s, reached a peak around 1980, decreased from the late 1980s and 1990s, and has been steadily increasing since 2000. The seasonal trend can be seen in the third facet. The up-and-down nature of this plot suggests that Danceability falls in cycles that last about 5 years. Perhaps the main takeaway from this graph is therefore that not only does Danceability come in waves over the span of decades, but it also comes in waves between years.
 
 ***
 ***
 
+# Conclusions
 
-# CONCLUSION
-
-
-
-
-
-
-
-
-
+Finally, we can conclude that .
