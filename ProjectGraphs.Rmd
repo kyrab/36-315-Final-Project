@@ -302,7 +302,7 @@ ggsdc(data = average, aes(x = Year, y = avg),
   labs(x = "Start Date", y = "Median Danceability")
 ```
 
-The global trend can be seen in the second facet, which shows that the median Danceability was low until the 1970s, reached a peak around 1980, decreased from the late 1980s and 1990s, and has been steadily increasing since 2000. The seasonal trend can be seen in the third facet. The up-and-down nature of this plot suggests that Danceability falls in cycles that last about 5 years. Therefore, the main takeaway from this graph is that not only does Danceability come in waves over the span of decades, but it also comes in waves between years.
+The global trend can be seen in the second facet, which shows that the median Danceability was low until the 1970s, reached a peak around 1980, decreased from the late 1980s and 1990s, and has been steadily increasing since 2000. The seasonal trend can be seen in the third facet. The consistent up-and-down nature of this facet, especially since around 1990, suggests that Danceability falls in cycles that last about 5 years. Therefore, the main takeaway from this graph is that not only does Danceability come in big waves over the span of decades, but it also comes in small waves over the span of a few years.
 
 ***
 ***
