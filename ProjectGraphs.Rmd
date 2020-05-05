@@ -178,7 +178,6 @@ Here, we plotted just the predictor variables that appeared to show some variati
 
 
 ```{r}
-<<<<<<< HEAD
 #ggplot(spotify, aes(x = Duration, y = Popularity)) + 
   #geom_point(aes(color = Decade)) + 
   #labs(title = "Popularity and Danceability by Genre")
@@ -190,7 +189,6 @@ model2 <- step(model1, direction = "backward", trace = 0)
 summary(model2)
 #plot(model2$fitted.values ~ spotify$Popularity)
 #abline(0, 1)
-=======
 # #ggplot(spotify, aes(x = Duration, y = Popularity)) + 
 #   #geom_point(aes(color = Decade)) + 
 #   #labs(title = "Popularity and Danceability by Genre")
@@ -202,7 +200,6 @@ summary(model2)
 # summary(model2)
 # #plot(model2$fitted.values ~ spotify$Popularity)
 # abline(0, 1)
->>>>>>> 6451633f8e116ec7b1f0550d3d381f5456338000
 ```
 
 ***
