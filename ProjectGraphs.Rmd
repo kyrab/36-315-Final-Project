@@ -92,7 +92,7 @@ spotify = spotify %>%
 
 # Data Description
 
-The "Spotify: All Time Top 2000 Mega Dataset" is a dataset from [Kaggle](https://www.kaggle.com/iamsumat/spotify-top-2000s-mega-dataset) that contains various audio statistics and ratings of the top 1994 songs on Spotify. For each song, it includes information such as the Title, Artist, Year of release, Top Genre, BPM (beats per minute), and Duration. It also includes various ratings, such as those measuring its level of Energy, Danceability, Loudness, Liveness, Valence, Acousticness, Speechiness, and Popularity. We manually added additional Genre, Decade, and Decade Range columns so that we could cluster songs into fewer groups, which will make our analyses more clear.
+The "Spotify: All Time Top 2000 Mega Dataset" is a dataset from [Kaggle](https://www.kaggle.com/iamsumat/spotify-top-2000s-mega-dataset) that contains various audio statistics and ratings of the top 1994 songs on Spotify. For each song, it includes information such as the Title, Artist, Top Genre, Year of release, BPM (beats per minute), and Duration. The first three are nominal categorical variables, Year is an ordinal categorical variable, and the last two are quantitative variables. In addition, for each song, this dataset includes various quantitative ratings, such as those measuring its level of Energy, Danceability, Loudness, Liveness, Valence, Acousticness, Speechiness, and Popularity. We manually added additional Genre, Decade, and Decade Range columns so that we could cluster songs into fewer groups, which will make our analyses more clear.
 
 ***
 ***
@@ -129,7 +129,7 @@ grid.arrange(
 )
 ```
 
-Of the 10 quantitative variables in this dataset, it seems like only Energy, Danceability, and Popularity show a clear difference between the different overall genres (Note that for the above graphs, we have removed the "other" genre, since it encompasses too many miscellaneous songs and does not provide useful information). Within those three, it seems like country songs tend to have lower Energy than songs of other genres, hip hop songs tend to have higher Danceability than songs of other genres, and indie songs tend to have lower Popularity than songs of other genres. Note, however, that our sample size for the hip hop, indie, and country genres is relatively small, so the conclusions drawn here are not necessarily meaningful.
+Out of the 11 quantitative variables in this dataset, it seems that only Energy, Danceability, and Popularity show a clear difference between the different overall genres. (Note that for the above graphs, we have removed the "other" genre, since it encompasses too many miscellaneous songs and does not provide useful information.) Within those three, it seems like country songs tend to have lower Energy than songs of other genres, hip hop songs tend to have higher Danceability than songs of other genres, and indie songs tend to have lower Popularity than songs of other genres. Note, however, that our sample size for the hip hop, indie, and country genres is relatively small, so the conclusions drawn here are not necessarily meaningful.
 
 ### Graph 2
 
@@ -151,9 +151,12 @@ spotify %>%
             ifelse(spotify %>% filter(Genre != "other") %>% pull(Genre) == "pop", "green",
               "blue"))))) %>% 
   plot(main = "Spotify Dendrogram")
+legend("topright", col = c("blue", "green", "red", "brown", "purple"), 
+       legend = c("Rock", "Pop", "Hip Hop", "Country", "Indie"), pch = 20, cex = 0.75,
+       ncol = 2, title = "Leaf Color")
 ```
 
-This dendrogram, made based off of the three variables described above, appears to show very little difference between the five genres. Each of the clusters appears to somewhat similarly distributed. Also, a majority of the data is categorized as `rock`, as our EDA shows.
+The clusters of this dendrogram, made based off of the three variables described above, are not just the five main genres. In other words, it appears to show very little difference between the five genres. Each of the clusters' leaves, colored by Genre, appear to somewhat similarly distributed, with the majority of the distribution consisting of rock songs.
 
 ### Graph 3
 
@@ -206,7 +209,7 @@ summary(model2)
 
 ## Research Question 3: Time
 
-The third research question mainly concerns itself with time trends. Therefore, we explored various song attributes in the context of the Year, Decade, or Decade Range in which it was released.
+The third research question mainly concerns itself with time trends. Therefore, we explored various song attributes in the context of the Year or Decade Range in which it was released.
 
 ### Graph 1
 
@@ -240,7 +243,7 @@ ggbiplot(spotify.pca, groups = spotify$Range, ellipse = TRUE, alpha = 0.5) +
        y = "Standardized PC2 (14.5% explained var.)")
 ```
 
-We can see that Decade Range slightly clusters by the first two principal components, since there are mostly blue datapoints on the top and mostly red datapoints on the bottom. One observation that can be made from this graph is that as BPM increases, PC1 decreases and PC2 increases. Since datapoints from the 1990s-2010s are mostly in this general direction, we can conclude that songs from the 1990s-2010s tend to have a greater number of beats per minute than songs from the 1950s-1980s. That being said, the Normal distribution ellipses overlap quite a bit; as a result, there is not enough evidence to conclude that the two groups are significantly different with respect to their principal components.
+We can see that Decade Range slightly clusters by the first two principal components, since there are mostly blue datapoints on the top and mostly red datapoints on the bottom. One observation that can be made from this graph is that as BPM increases, PC1 decreases and PC2 increases; since datapoints from the 1990s-2010s are mostly in this general direction, we can conclude that songs from the 1990s-2010s tend to have a greater number of beats per minute than songs from the 1950s-1980s. That being said, the Normal distribution ellipses overlap quite a bit; as a result, there is not enough evidence to conclude that the two groups are significantly different with respect to their principal components.
 
 ### Graph 2
 
@@ -317,21 +320,17 @@ ggsdc(data = average, aes(x = Year, y = avg),
   labs(x = "Start Date", y = "Median Danceability")
 ```
 
-The global trend can be seen in the second facet, which shows that the median Danceability rating for songs started off rather low, climbed throughout the 1970s, reached a peak around 1980, decreased from the late 1980s and 1990s, and has been steadily increasing since 2000. The seasonal trend can be seen in the third facet: the consistent up-and-down nature of this plot, especially since 1990, suggests that the median Danceability rating follows a cyclical pattern that lasts about 5 years per cycle. Therefore, the main takeaway from this graph is that not only does Danceability come in big waves over the span of decades, but it also comes in small waves over the span of a few years.
+The global trend can be seen in the second facet, which shows that the median Danceability rating for songs started off rather low, climbed throughout the 1970s, reached a peak around 1980, decreased from the late 1980s and 1990s, and has been steadily increasing since 2000. The seasonal trend can be seen in the third facet: the consistent up-and-down nature of this plot, especially since 1990, suggests that the median Danceability rating follows a cyclical pattern that lasts about five years per cycle. Therefore, the main takeaway from this graph is that not only does Danceability come in big waves over the span of decades, but it also comes in small waves over the span of a few years.
 
 ***
 ***
 
 # Conclusions
 
-Overall, we can conclude that.
-
-In the future, we would like to 
-
-Finally, we can conclude that ...
-
-Overall, there is not much difference between the five genres, in terms of the quantitative variables in this dataset. We did observe some minor trends in Energy, Danceability, and Popularity, where one or two genres were somewhat differentiated from the rest. However, when comparing the five genres using all 11 of the quantitative variables, we could not observe any clear difference between them.
+Overall, there is not much of a difference between the five genres, at least in terms of the quantitative variables in this dataset. While we did observe some minor trends in Energy, Danceability, and Popularity, where one or two genres somewhat differentiated themselves from the rest, we could not observe any clear difference between them.
 
 [Second question conclusions]
 
-[Third question conclusions]
+Finally, we can see that a variety of qualitative and quantitative attributes have appeared to change over time.
+
+In our future work, we look forward to exploring these relationships with greater granularity and experimenting with various subsets of the data to perform subgroup analyses.
