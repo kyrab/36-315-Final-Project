@@ -1,5 +1,6 @@
 ---
-title: "36-315 Final Project"
+title: "A Visual Analysis of Top Spotify Song Data"
+subtitle: "36-315 Final Project"
 author: "Kyra Balenzano, Evan Feder, David Yuan"
 output:
   html_document:
@@ -24,7 +25,6 @@ library(devtools)
 library(ggbiplot)
 library(dplyr)
 library(GGally)
-library(kableExtra)
 ```
 
 ```{r message = F, warning = F}
@@ -171,15 +171,15 @@ Here, we plotted the variables that appeared to show some variation from the fir
 
 ## Research Question 2: Popularity
 
-What qualities do popular songs emobody? By taking a look at the correlations between Popularity and other attributes, we can see what these popular songs have in common.
+What qualities do popular songs embody? By taking a look at the correlations between Popularity and other attributes, we can see what these popular songs have in common.
 
 ### Table 1
 
-```{r, fig.cap="Table of Popularity correlatioon values with quantitative variables."}
-correls <- c(-0.00318,0.103,0.144,0.166,-0.122,0.0959,-0.0367,-0.0876,0.112)
-names <- c("BPM", "Energy", "Danceability", "Loudness", "Liveness", "Valence", 
+```{r}
+correls <- data.frame(-0.00318,0.103,0.144,0.166,-0.122,0.0959,-0.0367,-0.0876,0.112)
+colnames(correls) <- c("BPM", "Energy", "Danceability", "Loudness", "Liveness", "Valence", 
            "Duration", "Acousticness", "Speechiness")
-kable(t(correls), col.names = names)
+pandoc.table(correls)
 ```
 
 After isolating the correlation coefficient portion of the pairs plot, we can see how correlated Popularity is with the quantative variables. As the asbolute value of all of these correlation coefficients are under 0.2, we can state that Popularity is not associated with any of these quantitative variables.
