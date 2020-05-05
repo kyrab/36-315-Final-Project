@@ -227,7 +227,8 @@ apply(prinComps, MARGIN = 2, FUN = sd)
 ggbiplot(spotify.pca, groups = spotify$Range, ellipse = TRUE, alpha = 0.5) +
   labs(color = "Decade Range",
        x = "Standardized PC1 (24.2% explained var.)",
-       y = "Standardized PC2 (14.5% explained var.)")
+       y = "Standardized PC2 (14.5% explained var.)",
+       title = "PCA Plot of Quantitative Variables by Decade Range")
 ```
 
 We can see that Decade Range slightly clusters by the first two principal components, since there are mostly blue datapoints on the top and mostly red datapoints on the bottom. One observation that can be made from this graph is that as BPM increases, PC1 decreases and PC2 increases; since datapoints from the 1990s-2010s are mostly in this general direction, we can conclude that songs from the 1990s-2010s tend to have a greater number of beats per minute than songs from the 1950s-1980s. That being said, the Normal distribution ellipses overlap quite a bit; as a result, there is not enough evidence to conclude that the two groups are significantly different with respect to their principal components.
@@ -304,7 +305,8 @@ average = spotify %>%
 ggsdc(data = average, aes(x = Year, y = avg),
       frequency = 5, method = "stl", s.window = 7) +
   geom_line() +
-  labs(x = "Start Date", y = "Median Danceability")
+  labs(x = "Year", y = "Median Danceability",
+       title = "Seasonal Decomposition Plot of Median Danceability")
 ```
 
 The global trend can be seen in the second facet, which shows that the median Danceability rating for songs started off rather low, climbed throughout the 1970s, reached a peak around 1980, decreased from the late 1980s and 1990s, and has been steadily increasing since 2000. The seasonal trend can be seen in the third facet: the consistent up-and-down nature of this plot, especially since 1990, suggests that the median Danceability rating follows a cyclical pattern that lasts about five years per cycle. Therefore, the main takeaway from this graph is that not only does Danceability come in big waves over the span of decades, but it also comes in small waves over the span of a few years.
