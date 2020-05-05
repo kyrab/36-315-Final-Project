@@ -124,7 +124,7 @@ grid.arrange(
   ggplot(spotify %>% filter(Genre != "other"), aes(x = Danceability, fill = Genre)) + 
     geom_density(alpha = 0.3),
   
-  ggplot(spotify %>% filter(Genre != "other"), aes(x = Popularity, fill = Genre)) + 
+  ggplot(spotify %>% filter(Genre != "other"), aes(x = Duration, fill = Genre)) + 
     geom_density(alpha = 0.3)
 )
 ```
@@ -173,36 +173,23 @@ Here, we plotted just the predictor variables that appeared to show some variati
 
 ## Research Question 2: Popularity
 
+What qualities do popular songs emobody? By taking a look at the correlation between Popularity 
+
+# no correlation between popularity and other variables
+
 ### Graph 1
-
-### Graph 2
-
-### Graph 3
 
 
 ```{r}
-#ggplot(spotify, aes(x = Duration, y = Popularity)) + 
-  #geom_point(aes(color = Decade)) + 
-  #labs(title = "Popularity and Danceability by Genre")
-#ggpairs(data = spotify, columns = 6:15)
-model1 <- glm(Popularity ~ BPM + Energy + Danceability + Loudness + Liveness + 
-                Valence + Duration +  Acousticness + Speechiness + Genre + 
-                Decade, data = spotify, family = gaussian)
-model2 <- step(model1, direction = "backward", trace = 0)
-summary(model2)
-#plot(model2$fitted.values ~ spotify$Popularity)
-#abline(0, 1)
-# #ggplot(spotify, aes(x = Duration, y = Popularity)) + 
-#   #geom_point(aes(color = Decade)) + 
-#   #labs(title = "Popularity and Danceability by Genre")
-# #ggpairs(data = spotify, columns = 6:15)
-# model1 <- glm(Popularity ~ BPM + Energy + Danceability + Loudness + Liveness + 
-#                 Valence + Duration +  Acousticness + Speechiness + Genre + 
-#                 Decade, data = spotify, family = gaussian)
-# model2 <- step(model1, direction = "backward", trace = 0)
-# summary(model2)
-# #plot(model2$fitted.values ~ spotify$Popularity)
-# abline(0, 1)
+#ggpairs(data = spotify, columns = (8:15))
+
+ggplot(spotify, aes(x = Genre, y = Popularity)) + 
+  geom_boxplot() + 
+  labs(title = "Popularity across Genres")
+
+ggplot(spotify, aes(x = Decade, y = Popularity, fill = Genre)) + 
+  geom_boxplot() + 
+  labs(title = "Popularity across Decades")
 ```
 
 ***
@@ -329,7 +316,7 @@ The global trend can be seen in the second facet, which shows that the median Da
 
 Overall, there is not much of a difference between the five genres, at least in terms of the quantitative variables in this dataset. While we did observe some minor trends in Energy, Danceability, and Popularity, where one or two genres somewhat differentiated themselves from the rest, we could not observe any clear difference between them.
 
-[Second question conclusions]
+We were able to conclude that Popularity is not assoicated with any of the other qualitative variables in the dataset. While indie music is less popular than the other genres, there are no differences between the rest.
 
 Finally, we can see that a variety of qualitative and quantitative attributes have appeared to change over time.
 
