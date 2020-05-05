@@ -21,7 +21,7 @@ library(ggseas)
 library(dendextend)
 library(devtools)
 # install_github("vqv/ggbiplot")
-# library(ggbiplot)
+library(ggbiplot)
 library(dplyr)
 library(GGally)
 ```
@@ -178,17 +178,17 @@ Here, we plotted just the predictor variables that appeared to show some variati
 
 
 ```{r}
-#ggplot(spotify, aes(x = Duration, y = Popularity)) + 
-  #geom_point(aes(color = Decade)) + 
-  #labs(title = "Popularity and Danceability by Genre")
-#ggpairs(data = spotify, columns = 6:15)
-model1 <- glm(Popularity ~ BPM + Energy + Danceability + Loudness + Liveness + 
-                Valence + Duration +  Acousticness + Speechiness + Genre + 
-                Decade, data = spotify, family = gaussian)
-model2 <- step(model1, direction = "backward", trace = 0)
-summary(model2)
-#plot(model2$fitted.values ~ spotify$Popularity)
-abline(0, 1)
+# #ggplot(spotify, aes(x = Duration, y = Popularity)) + 
+#   #geom_point(aes(color = Decade)) + 
+#   #labs(title = "Popularity and Danceability by Genre")
+# #ggpairs(data = spotify, columns = 6:15)
+# model1 <- glm(Popularity ~ BPM + Energy + Danceability + Loudness + Liveness + 
+#                 Valence + Duration +  Acousticness + Speechiness + Genre + 
+#                 Decade, data = spotify, family = gaussian)
+# model2 <- step(model1, direction = "backward", trace = 0)
+# summary(model2)
+# #plot(model2$fitted.values ~ spotify$Popularity)
+# abline(0, 1)
 ```
 
 
