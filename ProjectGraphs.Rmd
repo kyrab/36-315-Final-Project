@@ -20,9 +20,10 @@ library(tm)
 library(ggseas)
 library(dendextend)
 library(devtools)
-#install_github("vqv/ggbiplot")
+install_github("vqv/ggbiplot")
 library(ggbiplot)
 library(dplyr)
+library(GGally)
 ```
 
 ```{r message = F, warning = F}
@@ -102,7 +103,7 @@ Using our dataset, we would like to answer three main questions:
 
 + Which attributes are associated with which genres?
 
-+ What attributes make a song popular?
++ Which attributes do popular songs tend to have?
 
 + How have the attributes of songs that appear on the top 2000 list changed over time?
 
@@ -115,16 +116,18 @@ In order to answer the first research question, we ______.
 
 ### Graph 1
 
-```{r}
-ggplot(spotify %>% filter(Genre != "other"), aes(x = Energy)) + 
+```{r, warning = FALSE}
+ggplot(spotify %>% filter(Genre != "other"), aes(x = Energy, color = "green")) + 
   geom_histogram() +
   facet_wrap(~ Genre, ncol = 1)
 
-ggplot(spotify %>% filter(Genre != "other"), aes(x = Danceability)) + 
+ggplot(spotify %>% filter(Genre != "other"), aes(x = Danceability, 
+                                                 color = "green")) + 
   geom_histogram() +
   facet_wrap(~ Genre, ncol = 1)
 
-ggplot(spotify %>% filter(Genre != "other"), aes(x = Popularity)) + 
+ggplot(spotify %>% filter(Genre != "other"), aes(x = Popularity, 
+                                                 color = "green")) + 
   geom_histogram() +
   facet_wrap(~ Genre, ncol = 1)
 ```
@@ -174,24 +177,21 @@ Again, this graph appears to show very little difference between the genres. The
 
 ### Graph 3
 
-```{r, warning = FALSE, message = FALSE}
-######### ARTIST NAME WORDCLOUD #########
-# Big name ==> more popular, can modify to replace artists with song names too
 
-# Redefine as Corpus
-artists = Corpus(VectorSource(spotify$Artist))
-
-# Remove punctuations
-artists = tm_map(artists, removePunctuation)
-
-dtm.artists = DocumentTermMatrix(artists, control = list(stopwords = TRUE))
-
-artists.words = dtm.artists$dimnames$Terms
-artists.freqs = colSums(as.matrix(dtm.artists))
-
-wordcloud(words = artists.words, freq = artists.freqs, 
-          random.order = FALSE, max.words = 150, colors = brewer.pal(8, "Paired"))
+```{r}
+#ggplot(spotify, aes(x = Duration, y = Popularity)) + 
+  #geom_point(aes(color = Decade)) + 
+  #labs(title = "Popularity and Danceability by Genre")
+#ggpairs(data = spotify, columns = 6:15)
+model1 <- glm(Popularity ~ BPM + Energy + Danceability + Loudness + Liveness + 
+                Valence + Duration +  Acousticness + Speechiness + Genre + 
+                Decade, data = spotify, family = gaussian)
+model2 <- step(model1, direction = "backward", trace = 0)
+summary(model2)
+#plot(model2$fitted.values ~ spotify$Popularity)
+abline(0, 1)
 ```
+
 
 ***
 
