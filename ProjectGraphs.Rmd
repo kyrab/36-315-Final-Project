@@ -123,9 +123,6 @@ grid.arrange(
   
   ggplot(spotify %>% filter(Genre != "other"), aes(x = Danceability, fill = Genre)) + 
     geom_density(alpha = 0.3),
-  
-  ggplot(spotify %>% filter(Genre != "other"), aes(x = Popularity, fill = Genre)) + 
-    geom_density(alpha = 0.3)
 )
 ```
 
@@ -173,37 +170,28 @@ Here, we plotted just the predictor variables that appeared to show some variati
 
 ## Research Question 2: Popularity
 
-### Graph 1
+What qualities do popular songs emobody? By taking a look at the correlations between Popularity and other attributes, we can see what these popular songs have in common.
 
-### Graph 2
+### Table 1
 
-### Graph 3
+```{r, fig.cap="Table of Popularity correlatioon values with quantitative variables."}
+correls <- c(-0.00318,0.103,0.144,0.166,-0.122,0.0959,-0.0367,-0.0876,0.112)
+names <- c("BPM", "Energy", "Danceability", "Loudness", "Liveness", "Valence", 
+           "Duration", "Acousticness", "Speechiness")
+kable(t(correls), col.names = names)
+```
 
+After isolating the correlation coefficient portion of the pairs plot, we can see how correlated Popularity is with the quantative variables. As the asbolute value of all of these correlation coefficients are under 0.2, we can state that Popularity is not associated with any of these quantitative variables.
+
+### Graph 4
 
 ```{r}
-#ggplot(spotify, aes(x = Duration, y = Popularity)) + 
-  #geom_point(aes(color = Decade)) + 
-  #labs(title = "Popularity and Danceability by Genre")
-#ggpairs(data = spotify, columns = 6:15)
-model1 <- glm(Popularity ~ BPM + Energy + Danceability + Loudness + Liveness + 
-                Valence + Duration +  Acousticness + Speechiness + Genre + 
-                Decade, data = spotify, family = gaussian)
-model2 <- step(model1, direction = "backward", trace = 0)
-summary(model2)
-#plot(model2$fitted.values ~ spotify$Popularity)
-#abline(0, 1)
-# #ggplot(spotify, aes(x = Duration, y = Popularity)) + 
-#   #geom_point(aes(color = Decade)) + 
-#   #labs(title = "Popularity and Danceability by Genre")
-# #ggpairs(data = spotify, columns = 6:15)
-# model1 <- glm(Popularity ~ BPM + Energy + Danceability + Loudness + Liveness + 
-#                 Valence + Duration +  Acousticness + Speechiness + Genre + 
-#                 Decade, data = spotify, family = gaussian)
-# model2 <- step(model1, direction = "backward", trace = 0)
-# summary(model2)
-# #plot(model2$fitted.values ~ spotify$Popularity)
-# abline(0, 1)
+ggplot(spotify, aes(x = Genre, y = Popularity)) + 
+  geom_boxplot(fill = "darkgreen") + 
+  labs(title = "Popularity across Genres")
 ```
+
+Taking a look across genre, one clear trend seems to be that indie songs are less popular than those of the other genres. Hip-hop appears to have the highest median popularity across the genres, but with some clear skew left it is hard to judge any clear differences between the non-indie genres.
 
 ***
 
@@ -211,7 +199,7 @@ summary(model2)
 
 The third research question mainly concerns itself with time trends. Therefore, we explored various song attributes in the context of the Year or Decade Range in which it was released.
 
-### Graph 1
+### Graph 5
 
 Since our dataset contains so many quantitative variables, we first conducted principal component analysis (PCA). We then made a graph plotting the first two components, and colored our datapoints by the Decade Range variable so that we could make some comparisons regarding time without clouding the graph with too many overlapping colors.
 
@@ -246,7 +234,7 @@ ggbiplot(spotify.pca, groups = spotify$Range, ellipse = TRUE, alpha = 0.5) +
 
 We can see that Decade Range slightly clusters by the first two principal components, since there are mostly blue datapoints on the top and mostly red datapoints on the bottom. One observation that can be made from this graph is that as BPM increases, PC1 decreases and PC2 increases; since datapoints from the 1990s-2010s are mostly in this general direction, we can conclude that songs from the 1990s-2010s tend to have a greater number of beats per minute than songs from the 1950s-1980s. That being said, the Normal distribution ellipses overlap quite a bit; as a result, there is not enough evidence to conclude that the two groups are significantly different with respect to their principal components.
 
-### Graph 2
+### Graph 6
 
 To address some of our quantative variables, we made a comparison word cloud between the top genres of songs from the 1950s to the 1980s and the top genres of songs from the 1990s to the 2010s to provide insight on how the top genres have changed, if at all, between these two eras.
 
@@ -303,7 +291,7 @@ comparison.cloud(tdm.titleAll.sum, random.order = FALSE, rot.per = 0.3,
 
 From this word cloud, there are a few song genres that almost exclusively appeared in the 1950s-1980s, such as "adult standards," "classic rock," "album," and "europop." Meanwhile, "alternative," "modern," and "pop" music seem to be more popular genres in the 1990s-2010s. So, even though we grouped multiple decades together, making us unable to analyze how top genres may or may not have changed decade-to-decade, it is clear that there are some genres that were/are more prominent in one time period or another.
 
-### Graph 3
+### Graph 7
 
 Finally, to more closely monitor how a single quantitative attribute has changed over time, we constructed a time series plot with decomposition measuring median Danceability.
 
@@ -329,9 +317,9 @@ The global trend can be seen in the second facet, which shows that the median Da
 
 # Conclusions
 
-Overall, there is not much of a difference between the five genres, at least in terms of the quantitative variables in this dataset. While we did observe some minor trends in Energy, Danceability, and Popularity, where one or two genres somewhat differentiated themselves from the rest, we could not observe any clear difference between them.
+Overall, there is not much of a difference between the five genres, at least in terms of the quantitative variables in this dataset. While we did observe some minor trends in Energy and Danceability where one or two genres somewhat differentiated themselves from the rest, we could not observe any clear difference between them.
 
-[Second question conclusions]
+We were able to conclude that Popularity is not assoicated with any of the other qualitative variables in the dataset. Indie music is less popular than other genres, but there seem to be no differences among the rest.
 
 Finally, we can conclude that a variety of qualitative and quantitative attributes have appeared to change over time, but not necessarily to a statistically-significant degree.
 
