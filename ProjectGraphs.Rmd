@@ -25,6 +25,7 @@ library(devtools)
 library(ggbiplot)
 library(dplyr)
 library(GGally)
+library(knitr)
 ```
 
 ```{r message = F, warning = F}
@@ -176,10 +177,10 @@ What qualities do popular songs embody? By taking a look at the correlations bet
 ### Table 1
 
 ```{r}
-correls <- data.frame(-0.00318,0.103,0.144,0.166,-0.122,0.0959,-0.0367,-0.0876,0.112)
-colnames(correls) <- c("BPM", "Energy", "Danceability", "Loudness", "Liveness", "Valence", 
+correls <- c(-0.00318,0.103,0.144,0.166,-0.122,0.0959,-0.0367,-0.0876,0.112)
+names <- c("BPM", "Energy", "Danceability", "Loudness", "Liveness", "Valence", 
            "Duration", "Acousticness", "Speechiness")
-pandoc.table(correls)
+kable(t(correls), col.names = names, format = "html")
 ```
 
 After isolating the correlation coefficient portion of the pairs plot, we can see how correlated Popularity is with the quantative variables. As the asbolute value of all of these correlation coefficients are under 0.2, we can state that Popularity is not associated with any of these quantitative variables.
