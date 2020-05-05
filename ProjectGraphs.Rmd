@@ -92,7 +92,7 @@ spotify = spotify %>%
 
 # Data Description
 
-The "Spotify: All Time Top 2000 Mega Dataset" is a dataset from [Kaggle](https://www.kaggle.com/iamsumat/spotify-top-2000s-mega-dataset) that contains various audio statistics and ratings of the top 1994 songs on Spotify. For each song, it includes information such as the Title, Artist, Top Genre, Year of release, BPM (beats per minute), and Duration. The first three are nominal categorical variables, Year is an ordinal categorical variable, and the last two are quantitative variables. In addition, for each song, this dataset includes various quantitative ratings, such as those measuring its level of Energy, Danceability, Loudness, Liveness, Valence, Acousticness, Speechiness, and Popularity. We manually added additional Genre, Decade, and Decade Range columns so that we could cluster songs into fewer groups, which will make our analyses more clear.
+The "Spotify: All Time Top 2000 Mega Dataset" is a dataset from [Kaggle](https://www.kaggle.com/iamsumat/spotify-top-2000s-mega-dataset) that contains various audio statistics and ratings of the top 1,994 songs on Spotify. For each song, it includes information such as the Title, Artist, Top Genre, Year of release, BPM (beats per minute), and Duration. The first three are nominal categorical variables, Year is an ordinal categorical variable, and the last two are quantitative variables. In addition, for each song, this dataset includes various quantitative ratings, such as those measuring its level of Energy, Danceability, Loudness, Liveness, Valence, Acousticness, Speechiness, and Popularity. We manually added additional Genre, Decade, and Decade Range columns so that we could cluster songs into fewer groups, which will make our visualizations more clear.
 
 ***
 ***
@@ -333,6 +333,6 @@ Overall, there is not much of a difference between the five genres, at least in 
 
 [Second question conclusions]
 
-Finally, we can see that a variety of qualitative and quantitative attributes have appeared to change over time.
+Finally, we can conclude that a variety of qualitative and quantitative attributes have appeared to change over time, but not necessarily to a statistically-significant degree.
 
-In our future work, we look forward to exploring these relationships with greater granularity and experimenting with various subsets of the data to perform subgroup analyses.
+In our future work, we look forward to exploring these relationships with greater granularity and would be interested in experimenting with various subsets of the data to perform subgroup analyses.
