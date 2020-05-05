@@ -191,6 +191,25 @@ ggplot(data = average, aes(x = Year, y = avg)) +
        x = "Year", y = "Median Danceability")
 ```
 
+```{r, warning = FALSE, message = FALSE}
+######### ARTIST NAME WORDCLOUD #########
+# Big name ==> more popular, can modify to replace artists with song names too
+
+# Redefine as Corpus
+artists = Corpus(VectorSource(spotify$Artist))
+
+# Remove punctuations
+artists = tm_map(artists, removePunctuation)
+
+dtm.artists = DocumentTermMatrix(artists, control = list(stopwords = TRUE))
+
+artists.words = dtm.artists$dimnames$Terms
+artists.freqs = colSums(as.matrix(dtm.artists))
+
+wordcloud(words = artists.words, freq = artists.freqs, 
+          random.order = FALSE, max.words = 150, colors = brewer.pal(8, "Paired"))
+```
+
 Note limitations!!
 
 # Conclusions
