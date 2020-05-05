@@ -111,8 +111,16 @@ ggplot(data = spotify, aes(x = mds1, y = mds2)) +
        title = "MDS Coordinate 2 vs. MDS Coordinate 1")
 ```
 
+(Probably the one I would vote to go first due to the nuance of analysis needed)
+
+Since we have so many quantitative variables, we first conducted principal component analysis (PCA). We then made a graph plotting the first two components, and colored our datapoints by the Decade Range variable so that we could make some comparisons regarding time without clouding the graph with too many overlapping colors.
+
 ```{r}
 ######### PCA PLOT #########
+
+# Just include qualitative variables for PCA
+spotify.subset = spotify %>% 
+  select(-c(Index, Title, Artist, Top.Genre, Genre, Decade, Range))
 
 # From R Demo, Lecture 18:
 spotify.center = apply(spotify.subset, MARGIN = 2, FUN = function(x) x - mean(x))
@@ -134,6 +142,8 @@ ggbiplot(spotify.pca, groups = spotify$Range, alpha = 0.5) +
        x = "Standardized PC1 (24.2% explained var.)",
        y = "Standardized PC2 (14.5% explained var.)")
 ```
+
+We can see that Decade Range slightly clusters by the first two components, since there are mostly blue datapoints on the top and mostly red datapoints on the bottom. One example of a conclusion that can be drawn from the graph is that as BPM increases, both PC1 decreases and PC2 increases, which further allows us to conclude that songs from the 1990s-2010s tend to have a greater number of beats per minute than songs from the 1950s-1980s. That being said, since the Normal distribution ellipses overlap quite a bit, there is not enough evidence to conclude that the two groups are significantly different with respect to their principal components.
 
 ```{r}
 # Here is the proportion of variance accounted by each principal component:
