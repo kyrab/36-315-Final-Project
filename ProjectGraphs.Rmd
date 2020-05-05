@@ -24,6 +24,7 @@ library(devtools)
 library(ggbiplot)
 library(dplyr)
 library(GGally)
+library(kableExtra)
 ```
 
 ```{r message = F, warning = F}
@@ -122,11 +123,11 @@ grid.arrange(
     geom_density(alpha = 0.3),
   
   ggplot(spotify %>% filter(Genre != "other"), aes(x = Danceability, fill = Genre)) + 
-    geom_density(alpha = 0.3),
+    geom_density(alpha = 0.3)
 )
 ```
 
-Out of the 11 quantitative variables in this dataset, it seems that only Energy, Danceability, and Popularity show a clear difference between the different overall genres. (Note that for the above graphs, we have removed the "other" genre, since it encompasses too many miscellaneous songs and does not provide useful information.) Within those three, it seems like country songs tend to have lower Energy than songs of other genres, hip hop songs tend to have higher Danceability than songs of other genres, and indie songs tend to have lower Popularity than songs of other genres. Note, however, that our sample size for the hip hop, indie, and country genres is relatively small, so the conclusions drawn here are not necessarily meaningful.
+Out of the 11 quantitative variables in this dataset, besides Popularity, which is more relevant to our second research question, it seems that only Energy and Danceability show a clear difference between the different overall genres. (For the above graphs, we have removed the "other" genre, since it encompasses too many miscellaneous songs and does not provide useful information.) Within these two, it seems like country songs tend to have lower Energy than songs of other genres, while hip hop songs tend to have higher Danceability than songs of other genres. Note, however, that our sample size for the hip hop, indie, and country genres is relatively small, so the conclusions drawn here are not necessarily meaningful.
 
 ### Graph 2
 
@@ -164,7 +165,7 @@ ggplot(spotify %>% filter(Genre != "other"), aes(x = Energy, y = Danceability)) 
   labs(title = "Danceability vs. Energy by Genre")
 ```
 
-Here, we plotted just the predictor variables that appeared to show some variation from the first graph. Again, this graph appears to show very little difference between the genres. There appears to just be one cluster, containing all of the genres somewhat uniformly. Again, this verifies that we have more rock songs than anything else in this dataset.
+Here, we plotted the variables that appeared to show some variation from the first graph. Again, this graph appears to show very little difference between the genres. There appears to just be one cluster, containing all of the genres somewhat uniformly. Again, this verifies that we have more rock songs than anything else in this dataset.
 
 ***
 
@@ -319,7 +320,7 @@ The global trend can be seen in the second facet, which shows that the median Da
 
 Overall, there is not much of a difference between the five genres, at least in terms of the quantitative variables in this dataset. While we did observe some minor trends in Energy and Danceability where one or two genres somewhat differentiated themselves from the rest, we could not observe any clear difference between them.
 
-We were able to conclude that Popularity is not assoicated with any of the other qualitative variables in the dataset. Indie music is less popular than other genres, but there seem to be no differences among the rest.
+We were able to conclude that Popularity is not assoicated with any of the other qualitative variables in the dataset. Indie music is less popular than other genres, but there seem to be no significant differences among the rest.
 
 Finally, we can conclude that a variety of qualitative and quantitative attributes have appeared to change over time, but not necessarily to a statistically-significant degree.
 
