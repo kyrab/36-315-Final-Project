@@ -26,6 +26,7 @@ library(ggbiplot)
 library(dplyr)
 library(GGally)
 library(knitr)
+library(kableExtra)
 ```
 
 ```{r message = F, warning = F}
@@ -155,7 +156,7 @@ legend("topright", col = c("blue", "green", "red", "brown", "purple"),
        ncol = 2, title = "Leaf Color")
 ```
 
-The clusters of this dendrogram, made based off of the three variables described above, are not just the five main genres. In other words, it appears to show very little difference between the five genres. Each of the clusters' leaves, colored by Genre, appear to somewhat similarly distributed, with the majority of the distribution consisting of rock songs.
+The clusters of this dendrogram, made based on the three variables described above, are not just the five main genres. In other words, it appears to show very little difference between the five genres. Each of the clusters' leaves, colored by Genre, appear to be somewhat similarly distributed, with the majority of the distribution consisting of rock songs.
 
 ### Graph 3
 
@@ -180,10 +181,11 @@ What qualities do popular songs embody? By taking a look at the correlations bet
 correls <- c(-0.00318,0.103,0.144,0.166,-0.122,0.0959,-0.0367,-0.0876,0.112)
 names <- c("BPM", "Energy", "Danceability", "Loudness", "Liveness", "Valence", 
            "Duration", "Acousticness", "Speechiness")
-kable(t(correls), col.names = names, format = "html")
+kable(t(correls), col.names = names, format = "html") %>% 
+  kable_styling(full_width = TRUE)
 ```
 
-After isolating the correlation coefficient portion of the pairs plot, we can see how correlated Popularity is with the quantative variables. As the asbolute value of all of these correlation coefficients are under 0.2, we can state that Popularity is not associated with any of these quantitative variables.
+After isolating the correlation coefficient portion of the pairs plot, we can see how correlated Popularity is with the quantitative variables. As the magnitude of all of these correlation coefficients are under 0.2, we can state that Popularity is not associated with any of these quantitative variables.
 
 ### Graph 4
 
@@ -234,11 +236,11 @@ ggbiplot(spotify.pca, groups = spotify$Range, ellipse = TRUE, alpha = 0.5) +
        title = "PCA Plot of Quantitative Variables by Decade Range")
 ```
 
-We can see that Decade Range slightly clusters by the first two principal components, since there are mostly blue datapoints on the top and mostly red datapoints on the bottom. One observation that can be made from this graph is that as BPM increases, PC1 decreases and PC2 increases; since datapoints from the 1990s-2010s are mostly in this general direction, we can conclude that songs from the 1990s-2010s tend to have a greater number of beats per minute than songs from the 1950s-1980s. That being said, the Normal distribution ellipses overlap quite a bit; as a result, there is not enough evidence to conclude that the two groups are significantly different with respect to their principal components.
+We can see that Decade Range slightly clusters by the first two principal components since there are mostly blue datapoints on the top and mostly red datapoints on the bottom. One observation that can be made from this graph is that as BPM increases, PC1 decreases and PC2 increases; since datapoints from the 1990s-2010s are mostly in this general direction, we can conclude that songs from the 1990s-2010s tend to have a greater number of beats per minute than songs from the 1950s-1980s. That being said, the Normal distribution ellipses overlap quite a bit; as a result, there is not enough evidence to conclude that the two groups are significantly different with respect to their principal components.
 
 ### Graph 6
 
-To address some of our quantative variables, we made a comparison word cloud between the top genres of songs from the 1950s to the 1980s and the top genres of songs from the 1990s to the 2010s to provide insight on how the top genres have changed, if at all, between these two eras.
+To address some of our qualitative variables, we made a comparison word cloud between the top genres of songs from the 1950s to the 1980s and the top genres of songs from the 1990s to the 2010s to provide insight on how the top genres have changed, if at all, between these two eras.
 
 ```{r, warning = FALSE, message = FALSE}
 ######### COMPARISON WORD CLOUD #########
@@ -321,8 +323,8 @@ The global trend can be seen in the second facet, which shows that the median Da
 
 Overall, there is not much of a difference between the five genres, at least in terms of the quantitative variables in this dataset. While we did observe some minor trends in Energy and Danceability where one or two genres somewhat differentiated themselves from the rest, we could not observe any clear difference between them.
 
-We were able to conclude that Popularity is not assoicated with any of the other qualitative variables in the dataset. Indie music is less popular than other genres, but there seem to be no significant differences among the rest.
+We were able to conclude that Popularity is not associated with any of the other qualitative variables in the dataset. Indie music is less popular than other genres, but there seem to be no significant differences among the rest.
 
-Finally, we can conclude that a variety of qualitative and quantitative attributes have appeared to change over time, but not necessarily to a statistically-significant degree.
+Finally, we can conclude that a variety of qualitative and quantitative attributes have appeared to change over time, such as Top Genre and Danceability, but not necessarily to a statistically-significant degree.
 
 In our future work, we look forward to exploring these relationships with greater granularity and would be interested in experimenting with various subsets of the data to perform subgroup analyses.

@@ -3,6 +3,11 @@ title: "35-315 Final Project Report"
 author: "Kyra Balenzano, Evan Feder, David Yuan"
 date: "5/2/2020"
 output: pdf_document
+linestretch: 1.241
+fontsize: 12pt
+header-includes:
+  - \setlength{\parindent}{2em}
+  - \usepackage{setspace} \doublespacing
 ---
 
 ```{r setup, include=FALSE}
@@ -87,40 +92,34 @@ spotify = spotify %>%
          Range = factor(Range))
 ```
 
-## Question 3: Time
+# Introduction
 
-```{r, warning = FALSE, message = FALSE}
-######### MDS PLOT #########
+The "Spotify: All Time Top 2000 Mega Dataset" is a dataset from [Kaggle](https://www.kaggle.com/iamsumat/spotify-top-2000s-mega-dataset) that contains various audio statistics and ratings of the top 1,994 songs on Spotify. For each song, it includes information such as the Title, Artist, Top Genre, Year of release, BPM (beats per minute), and Duration. The first three are nominal categorical variables, Year is an ordinal categorical variable, and the last two are quantitative variables. In addition, for each song, this dataset includes various quantitative ratings, such as those measuring its level of Energy, Danceability, Loudness, Liveness, Valence, Acousticness, Speechiness, and Popularity.
 
-# Just include qualitative variables for MDS
-spotify.subset = spotify %>% 
-  select(-c(Index, Title, Artist, Top.Genre, Genre, Decade, Range))
+We added additional Genre, Decade, and Decade Range columns so that we could cluster songs into fewer groups, which in turn make visualizations more clear. The Genre column was created by manually sorting the 149 unique Top Genres into six main categories (Rock, Pop, Country, Hip Hop, Indie, and Other). *[ADDRESS BIAS?]* Meanwhile, the Decade and Decade Range columns were able to be assembled programmatically.
 
-spotify.scaled = apply(spotify.subset, MARGIN = 2, FUN = function(x) x/sd(x))
-spotify.scaled.dist = dist(spotify.scaled)
+Using this dataset, we will answer three main questions in our report:
 
-mds = cmdscale(d = spotify.scaled.dist, k = 2)
-spotify$mds1 = mds[,1]
-spotify$mds2 = mds[,2]
-```
++ Which attributes are associated with which genres?
 
-```{r}
-ggplot(data = spotify, aes(x = mds1, y = mds2)) +
-  geom_point(aes(color = Range), size = 0.75) +
-  labs(x = "MDS Coordinate 1", y = "MDS Coordinate 2",
-       title = "MDS Coordinate 2 vs. MDS Coordinate 1")
-```
++ Which attributes do popular songs tend to have?
 
-(Probably the one I would vote to go first due to the nuance of analysis needed)
++ How have the attributes of songs that appear on the top 2000 list changed over time?
 
-Since we have so many quantitative variables, we first conducted principal component analysis (PCA). We then made a graph plotting the first two components, and colored our datapoints by the Decade Range variable so that we could make some comparisons regarding time without clouding the graph with too many overlapping colors.
+\newpage
+
+# Analysis
+
+## [Remove before handing in] Kyra's Graphs / Question 3: Time
+
+Since we had so many quantitative variables, we first tried to condense them into a couple of dimensions and see if there were any changes over time. We performed this dimension reduction using principal component analysis (PCA), plotted the first two dimensions of this result, and then colored the datapoints by the Decade Range variable so that we could make some comparisons regarding time without clouding the graph with too many overlapping colors.  
 
 ```{r}
 ######### PCA PLOT #########
 
 # Just include qualitative variables for PCA
 spotify.subset = spotify %>% 
-  select(-c(Index, Title, Artist, Top.Genre, Genre, Decade, Range))
+  select(-c(Index, Title, Artist, Top.Genre, Year, Genre, Decade, Range, mds1, mds2))
 
 # From R Demo, Lecture 18:
 spotify.center = apply(spotify.subset, MARGIN = 2, FUN = function(x) x - mean(x))
@@ -137,15 +136,20 @@ apply(prinComps, MARGIN = 2, FUN = sd)
 
 ```{r}
 # First two dimensions of PCA
-ggbiplot(spotify.pca, groups = spotify$Range, alpha = 0.5) +
+ggbiplot(spotify.pca, ellipse = TRUE, groups = spotify$Range, alpha = 0.5) +
   labs(color = "Decade Range",
-       x = "Standardized PC1 (24.2% explained var.)",
-       y = "Standardized PC2 (14.5% explained var.)")
+       x = "Standardized PC1 (26.3% explained var.)",
+       y = "Standardized PC2 (15.2% explained var.)")
 ```
 
-We can see that Decade Range slightly clusters by the first two components, since there are mostly blue datapoints on the top and mostly red datapoints on the bottom. One example of a conclusion that can be drawn from the graph is that as BPM increases, both PC1 decreases and PC2 increases, which further allows us to conclude that songs from the 1990s-2010s tend to have a greater number of beats per minute than songs from the 1950s-1980s. That being said, since the Normal distribution ellipses overlap quite a bit, there is not enough evidence to conclude that the two groups are significantly different with respect to their principal components.
+We can see that Decade Range very vaguely clusters by the first two components, since more of the blue datapoints are on the top and more of the red red datapoints are on the bottom. One example of a conclusion that can be drawn from the graph is that as BPM increases, both PC1 decreases and PC2 increases, which further allows us to conclude that songs from the 1990s-2010s tend to have a greater number of beats per minute than songs from the 1950s-1980s. That being said, since the Normal distribution ellipses overlap quite a bit, there is not enough evidence to conclude that the two groups are significantly different with respect to their principal components.
 
 ```{r}
+t.test(x = spotify.pca$x[spotify$Range == "1950s-1980s", "PC2"],
+       y = spotify.pca$x[spotify$Range == "1990s-2010s", "PC2"])
+```
+
+```{r, results = 'hide'}
 # Here is the proportion of variance accounted by each principal component:
 varProps = summary(spotify.pca)$importance["Proportion of Variance",]
 # Draw the line
