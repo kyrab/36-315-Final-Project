@@ -118,17 +118,29 @@ Using this dataset, we will answer three main questions in our report:
 
 Are you interested in making some popular music? The best way to learn how may be to study the professionals. What qualities do popular songs embody? By taking a look at the correlations between Popularity and other attributes, we can see what these popular songs have in common.
 
-```{r}
-#ggpairs()
+We should start by investigating just popularity itself.
+
+```{r, warning = FALSE, message = FALSE, fig.align = "center"}
+ggplot(data = spotify) +
+  geom_histogram(aes(x = Popularity), fill = "darkgreen", 
+                 color = "black", binwidth = 3) +
+                 labs(title = "Distribution of Song Popularity Rating")
+```
+Most songs seem to be concentrated in the middle half of the possible popularity range (between 25 - 75). There is definitely a left skew, with a unimodal peak around 65.
+
+We want to look into associations, so let's see how popularity is correlated with other quantitative variables through a pairs plot.
+
+```{r, warning = F, message = FALSE}
+ggpairs(data = spotify, columns = (6:15))
 ```
 
+This pairs plot is incredibly messy. What we're really looking for is correlation between just Population and other individual variables.
 
 ```{r}
 correls <- c(-0.00318,0.103,0.144,0.166,-0.122,0.0959,-0.0367,-0.0876,0.112)
 names <- c("BPM", "Energy", "Danceability", "Loudness", "Liveness", "Valence", 
            "Duration", "Acousticness", "Speechiness")
-kable(t(correls), col.names = names, format = "latex") %>% 
-  kable_styling(full_width = TRUE)
+kable(t(correls), col.names = names)
 ```
 
 After isolating the correlation coefficient portion of the pairs plot, we can see how correlated Popularity is with the quantitative variables. As the magnitude of all of these correlation coefficients are under 0.2, we can state that Popularity is not associated with any of these quantitative variables.
