@@ -94,9 +94,9 @@ spotify = spotify %>%
 
 # Introduction
 
-The "Spotify: All Time Top 2000 Mega Dataset" is a dataset from [Kaggle](https://www.kaggle.com/iamsumat/spotify-top-2000s-mega-dataset) that contains various audio statistics and ratings of the top 1,994 songs on Spotify. For each song, it includes information such as the Title, Artist, Top Genre, Year of release, BPM (beats per minute), and Duration. The first three are nominal categorical variables, Year is an ordinal categorical variable, and the last two are quantitative variables. In addition, for each song, this dataset includes various quantitative ratings, such as those measuring its level of Energy, Danceability, Loudness, Liveness, Valence, Acousticness, Speechiness, and Popularity.
+The "Spotify: All Time Top 2000 Mega Dataset" is a dataset from [Kaggle](https://www.kaggle.com/iamsumat/spotify-top-2000s-mega-dataset) that contains various audio statistics and ratings of the top 1,994 songs on Spotify. For each song, it includes information such as the Title, Artist, Top Genre (a very specific Spotify-labeled genre), Year of release, BPM (beats per minute), and Duration. The first three are nominal categorical variables, Year is an ordinal categorical variable, and the last two are quantitative variables. In addition, for each song, this dataset includes various quantitative ratings, such as those measuring its level of Energy, Danceability, Loudness, Liveness, Valence, Acousticness, Speechiness, and Popularity.
 
-We added additional Genre, Decade, and Decade Range columns so that we could cluster songs into fewer groups, which in turn make visualizations more clear. The Genre column was created by manually sorting the 149 unique Top Genres into six main categories (Rock, Pop, Country, Hip Hop, Indie, and Other). *[ADDRESS BIAS?]* Meanwhile, the Decade and Decade Range columns were able to be assembled programmatically.
+We added additional Genre, Decade, and Decade Range columns so that we could cluster songs into fewer groups, which in turn make visualizations more clear. The Genre column was created by manually sorting the 149 unique Top Genres into six main categories based on trends we saw within the data (Rock, Pop, Country, Hip Hop, Indie, and Other). Because of this anual sorting, there is a possibility of some human bias in results related to genre. Meanwhile, the Decade and Decade Range (two ranges, 1950s-1980s and 1990s-2010s) columns were able to be assembled programmatically.
 
 Using this dataset, we will answer three main questions in our report:
 
@@ -108,32 +108,86 @@ Using this dataset, we will answer three main questions in our report:
 
 # Analysis
 
-## Understanding Genre-Specific Attributes
 
-## Exploring Popularity
+## Question 1: Understanding Genre-Specific Attributes
+
+
+
+## Question 2: Exploring Popularity
+
+Are you interested in making some popular music? The best way to learn how may be to study the professionals. What qualities do popular songs embody? By taking a look at the correlations between Popularity and other attributes, we can see what these popular songs have in common.
+
+```{r}
+#ggpairs()
+```
+
+
+```{r}
+correls <- c(-0.00318,0.103,0.144,0.166,-0.122,0.0959,-0.0367,-0.0876,0.112)
+names <- c("BPM", "Energy", "Danceability", "Loudness", "Liveness", "Valence", 
+           "Duration", "Acousticness", "Speechiness")
+kable(t(correls), col.names = names, format = "html") %>% 
+  kable_styling(full_width = TRUE)
+```
+
+After isolating the correlation coefficient portion of the pairs plot, we can see how correlated Popularity is with the quantitative variables. As the magnitude of all of these correlation coefficients are under 0.2, we can state that Popularity is not associated with any of these quantitative variables.
+
+
+```{r}
+ggplot(spotify, aes(x = Genre, y = Popularity)) + 
+  geom_boxplot(fill = "darkgreen") + 
+  labs(title = "Popularity across Genres")
+```
+
+Taking a look across genre, one clear trend seems to be that indie songs are less popular than those of the other genres. Hip-hop appears to have the highest median popularity across the genres, but with some clear skew left it is hard to judge any clear differences between the non-indie genres.
+
+
+
 
 ```{r, warning = FALSE, message = FALSE}
 ######### ARTIST NAME WORDCLOUD #########
 # Big name ==> more popular, can modify to replace artists with song names too
 
+par(mfrow = c(1,2))
+
+# Create split datasets
+unpopular <- filter(spotify, spotify$Popularity <= 60)
+popular <- filter(spotify, spotify$Popularity > 60)
+
 # Redefine as Corpus
-artists = Corpus(VectorSource(spotify$Artist))
+unpop_artists = Corpus(VectorSource(popular$Artist))
+pop_artists = Corpus(VectorSource(popular$Artist))
 
 # Remove punctuations
-artists = tm_map(artists, removePunctuation)
+unpop_artists = tm_map(unpop_artists, removePunctuation)
+pop_artists = tm_map(pop_artists, removePunctuation)
 
-dtm.artists = DocumentTermMatrix(artists, control = list(stopwords = TRUE))
+# Create DTMs
+unpop_dtm.artists = DocumentTermMatrix(unpop_artists, control = 
+                                         list(stopwords = TRUE))
+pop_dtm.artists = DocumentTermMatrix(pop_artists, control = 
+                                       list(stopwords = TRUE))
 
-artists.words = dtm.artists$dimnames$Terms
-artists.freqs = colSums(as.matrix(dtm.artists))
+unpop_artists.words = unpop_dtm.artists$dimnames$Terms
+unpop_artists.freqs = colSums(as.matrix(unpop_dtm.artists))
+pop_artists.words = pop_dtm.artists$dimnames$Terms
+pop_artists.freqs = colSums(as.matrix(pop_dtm.artists))
 
-wordcloud(words = artists.words, freq = artists.freqs, 
-          random.order = FALSE, max.words = 150, colors = brewer.pal(8, "Paired"))
+
+wordcloud(words = unpop_artists.words, freq = unpop_artists.freqs, 
+          random.order = FALSE, max.words = 150, colors = 
+            brewer.pal(8, "Paired"))
+title(main = "Artists of Less Popular Songs")
+wordcloud(words = pop_artists.words, freq = pop_artists.freqs, 
+          random.order = FALSE, max.words = 150, colors = 
+            brewer.pal(8, "Paired"))
+title(main = "Artists of More Popular Songs")
 ```
 
 Above word cloud answers the question: which artists are the most popular? / Do particular artists make songs that are more popular?
 
-## Examining Time Trends
+
+## Question 3: Examining Time Trends
 
 Since we have so many quantitative variables, we first tried to condense them into a couple of dimensions and see if there were any changes over those. We performed this dimension reduction using principal component analysis (PCA), plotted the first two dimensions of this result, and then colored the datapoints by the Decade Range variable so that we could make some comparisons regarding time without clouding the graph with too many overlapping colors.
 
@@ -284,6 +338,7 @@ In general, we can observe that the number of songs released is more or less uni
 # but 1950s-1960s seemed to have the smallest duration mode, followed by 1970s, 2010s,
 # 2000s, 1980s, and then 1990s. Seemed to have cycled around.
 ```
+
 
 # Conclusions
 
