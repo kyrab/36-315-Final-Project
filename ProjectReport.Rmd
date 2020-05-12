@@ -26,6 +26,7 @@ library(dendextend)
 library(devtools)
 #install_github("vqv/ggbiplot")
 library(ggbiplot)
+library(kableExtra)
 ```
 
 ```{r message = F, warning = F}
@@ -126,7 +127,7 @@ Are you interested in making some popular music? The best way to learn how may b
 correls <- c(-0.00318,0.103,0.144,0.166,-0.122,0.0959,-0.0367,-0.0876,0.112)
 names <- c("BPM", "Energy", "Danceability", "Loudness", "Liveness", "Valence", 
            "Duration", "Acousticness", "Speechiness")
-kable(t(correls), col.names = names, format = "html") %>% 
+kable(t(correls), col.names = names, format = "latex") %>% 
   kable_styling(full_width = TRUE)
 ```
 
