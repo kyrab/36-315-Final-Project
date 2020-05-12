@@ -1,0 +1,8 @@
+---
+title: "36-315 Final Project Group Contribution"
+author: "Kyra Balenzano"
+date: "5/11/2020"
+output: pdf_document
+---
+
+For this project, I mainly worked on writing the data description and exploring the third research question. With respect to the latter, I made all four types of graphs that can be seen in our report and wrote their accompanying analyses. Finally, in the conclusion, I wrote the part that addressed the third research question, the paragraph regarding limitations to our analyses, and began the paragraph on future work. I also spent time helping my groupmates brainstorm graph ideas for their research questions.
