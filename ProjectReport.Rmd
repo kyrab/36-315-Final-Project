@@ -2,12 +2,14 @@
 title: "35-315 Final Project Report"
 author: "Kyra Balenzano, Evan Feder, David Yuan"
 date: "5/2/2020"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 linestretch: 1.241
-fontsize: 12pt
 header-includes:
-  - \setlength{\parindent}{2em}
-  - \usepackage{setspace} \doublespacing
+- \setlength{\parindent}{2em}
+- \usepackage{setspace} \doublespacing
+fontsize: 12pt
 ---
 
 ```{r setup, include=FALSE}
@@ -109,10 +111,116 @@ Using this dataset, we will answer three main questions in our report:
 
 # Analysis
 
-
 ## Question 1: Understanding Genre-Specific Attributes
 
+In our analysis of genres, one of the first things we sought to analyze was how our quantitative variables varied individually by genre (our manually sorted categories of Rock, Pop, Country, Hip Hop, Indie, and Other). In our first pass at analyzing our ten quantitative variables according to genre, we created density plots, colored according to genre, for each of the ten variables. Note that we excluded the `other` category from this analysis, as the data in this category is too diverse to be of much use, and we judged that we probably would not be able to make any meaningful conclusions about it (as it includes such genres originally labelled as "blues", "electro", "reggae", "streektaal", etc.).
 
+```{r, warning = FALSE}
+grid.arrange(
+  ggplot(spotify %>% filter(Genre != "other"), aes(x = BPM, fill = Genre)) + 
+    geom_density(alpha = 0.3),
+  
+  ggplot(spotify %>% filter(Genre != "other"), aes(x = Energy, fill = Genre)) + 
+    geom_density(alpha = 0.3),
+  
+  ggplot(spotify %>% filter(Genre != "other"), aes(x = Danceability, fill = Genre)) + 
+    geom_density(alpha = 0.3),
+  
+  ggplot(spotify %>% filter(Genre != "other"), aes(x = Loudness, fill = Genre)) + 
+    geom_density(alpha = 0.3),
+  
+  ggplot(spotify %>% filter(Genre != "other"), aes(x = Liveness, fill = Genre)) + 
+    geom_density(alpha = 0.3),
+  
+  ggplot(spotify %>% filter(Genre != "other"), aes(x = Valence, fill = Genre)) + 
+    geom_density(alpha = 0.3),
+  
+  ggplot(spotify %>% filter(Genre != "other"), aes(x = Duration, fill = Genre)) + 
+    geom_density(alpha = 0.3),
+  
+  ggplot(spotify %>% filter(Genre != "other"), aes(x = Acousticness, fill = Genre)) + 
+    geom_density(alpha = 0.3),
+  
+  ggplot(spotify %>% filter(Genre != "other"), aes(x = Speechiness, fill = Genre)) + 
+    geom_density(alpha = 0.3),
+  
+  ggplot(spotify %>% filter(Genre != "other"), aes(x = Popularity, fill = Genre)) + 
+    geom_density(alpha = 0.3),
+  
+  nrow = 5
+)
+```
+
+As we can see from the above density plots, BPM, Energy, Danceability, Valence and Popularity showed some clear differences between the genres, while the other five categories showed mostly similar trends between the five genres. For BPM, we can see two main peaks, with pop, indie, and hiphop on the lower end, and country and rock having higher BPM's. This seems to be a fairly surprising trend, as many tend to perceive pop and hiphop songs as having faster tempos, contrary to what this graph shows. For Energy, we can again see two main peaks, with hiphop being on the higher end and country and indie on the lower end. Again, this is a somewhat surprising trend after seeing the results of the BPM graph, since we assumed higher-paced songs would tend to have higher amounts of energy. The Danceability plot shows that all but hiphop have a similar distribution in that category. For Valence, we can see that three of the genres (country, pop, rock) all have a similar distribution, while hiphop and indie have different distributions (with slightly higher peaks). Lastly, Popularity seems to have mostly similar distributions, but with indie having a much lower peak than the rest. Overall, it seems like the five genres are mostly similar, but a few stand out in certain categories; in particular, hiphop seems to stand out in many categories.
+
+Next, we decided to take a look at a dendrogram using all 10 of the quantitative variables, to get a picture of how similar/different they were when taking all of the variables into account at the same time. In this dendrogram, five colors were used to color the branches because we have five genres; this was done so that if the genres tended to cluster together, it would make it more clear. Additionally, the other genre was again removed for the same reason as for the above graph. 
+
+```{r, warning = FALSE, message = FALSE}
+spotify %>% 
+  filter(Genre != "other") %>% 
+  select(BPM, Energy, Danceability, Loudness, Liveness, Valence, Duration, 
+         Acousticness, Speechiness, Popularity) %>% 
+  # select(Energy, Danceability, Popularity) %>% 
+  apply(MARGIN = 2, FUN = function(x) x/sd(x)) %>% 
+  dist %>% 
+  hclust(method = "complete") %>% 
+  as.dendrogram %>% 
+  set("branches_k_color", k=5) %>% 
+  set("labels_colors", order_value = TRUE, 
+      ifelse(spotify %>% filter(Genre != "other") %>% pull(Genre) == "country", "brown",
+        ifelse(spotify %>% filter(Genre != "other") %>% pull(Genre) == "hiphop", "red",
+          ifelse(spotify %>% filter(Genre != "other") %>% pull(Genre) == "indie", "purple",
+            ifelse(spotify %>% filter(Genre != "other") %>% pull(Genre) == "pop", "green",
+              "blue"))))) %>% 
+  plot(main = "Spotify Dendrogram")
+legend("topright", col = c("blue", "green", "red", "brown", "purple"), 
+       legend = c("Rock", "Pop", "Hip Hop", "Country", "Indie"), pch = 20, cex = 0.75,
+       ncol = 2, title = "Leaf Color")
+```
+
+In the dendrogram above, we have colored the leaves by genre in order to visualize how the data ended up clustering, in terms of clustering. We can see that each cluster tends to be somewhat uniformly divided between the genres. Most notably, the hiphop genre that we highlighted earlier does not appear to be significantly different from the other genres. From this graph, we can conclude that overall, when taking into account all of the quantitative variables, there does not appear to be much difference between the five genres. This plot does, however, confirm our suspicions that most of this dataset is composed of rock songs.
+
+Lastly for this question, we looked at contour plots using the variables of interest that we highlighted from our density plots from above. Leaving out Popularity (as that is analyzed in the next question), the four variables that we looked at are BPM, Energy, Danceability, and Valence. We look at six contour plots below, accounting for all six pairings of these variables of interest:
+
+```{r, warning = FALSE, message = FALSE}
+grid.arrange(
+  ggplot(spotify %>% filter(Genre != "other"), aes(x = BPM, y = Energy)) + 
+    geom_point(aes(color = Genre)) + 
+    geom_density2d() + 
+    labs(title = "BPM vs. Energy by Genre"), 
+  
+  ggplot(spotify %>% filter(Genre != "other"), aes(x = BPM, y = Danceability)) + 
+    geom_point(aes(color = Genre)) + 
+    geom_density2d() + 
+    labs(title = "BPM vs. Danceability by Genre"), 
+  
+  ggplot(spotify %>% filter(Genre != "other"), aes(x = BPM, y = Valence)) + 
+    geom_point(aes(color = Genre)) + 
+    geom_density2d() + 
+    labs(title = "BPM vs. Valence by Genre"), 
+  
+  ggplot(spotify %>% filter(Genre != "other"), aes(x = Energy, y = Danceability)) + 
+    geom_point(aes(color = Genre)) + 
+    geom_density2d() + 
+    labs(title = "Energy vs. Danceability by Genre"), 
+  
+  ggplot(spotify %>% filter(Genre != "other"), aes(x = Energy, y = Valence)) + 
+    geom_point(aes(color = Genre)) + 
+    geom_density2d() + 
+    labs(title = "Energy vs. Valence by Genre"), 
+  
+  ggplot(spotify %>% filter(Genre != "other"), aes(x = Danceability, y = Valence)) + 
+    geom_point(aes(color = Genre)) + 
+    geom_density2d() + 
+    labs(title = "Danceability vs. Valence by Genre"), 
+  
+  nrow = 3
+)
+```
+
+These graphs provide a somewhat surprising conclusion: that despite our observations from the density plots, the five genres don't seem to differ much, if at all, when looking at two variables instead of one, even if just limited to the variables that seem to show differentiation. In the BPM vs. Energy, BPM vs. Danceability, Energy vs. Danceability, and Danceability vs. Valence graphs, there appears to be only one peak, centered around the middle, which means that there is little to no differentiation between the genres for these variables. The BPM vs. Valence graph, while showing two peaks, again does not really show too much differentiation, as those peaks are located fairly close to each other and on similary contour levels; furthermore, the genres seem very similarly distributed between them. The Energy vs. Valence graph is similar: three peaks, but close in distance and similarly distributed in genres.
+
+Overall, we've found that though looking at one variable at a time seems to reveal some differences between the genres, it seems like when considering all them wholistically, the genres in this dataset seem to be fairly similar, in terms of the ten quantitative variables.
 
 ## Question 2: Exploring Popularity
 
