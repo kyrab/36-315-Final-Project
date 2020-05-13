@@ -222,11 +222,10 @@ These graphs provide a somewhat surprising conclusion: that despite our observat
 
 Overall, we've found that though looking at one variable at a time seems to reveal some differences between the genres, it seems like when considering all them wholistically, the genres in this dataset seem to be fairly similar, in terms of the ten quantitative variables.
 
+
 ## Question 2: Exploring Popularity
 
-Are you interested in making some popular music? The best way to learn how may be to study the professionals. What qualities do popular songs embody? By taking a look at the correlations between Popularity and other attributes, we can see what these popular songs have in common.
-
-We should start by investigating just popularity itself.
+Are you interested in making some popular music? The best way to learn how may be to study the professionals. What qualities do popular songs embody? By taking a look at the correlations between Popularity and other attributes, we can see what these popular songs have in common. We should start by investigating just popularity itself across all songs with univariate exploratory data analysis in the form of a histogram. This allows us to get a sense of what sort of popularity ratings are common and uncommon amongst songs.
 
 ```{r, warning = FALSE, message = FALSE, fig.align = "center"}
 ggplot(data = spotify) +
@@ -258,12 +257,13 @@ After isolating the correlation coefficient portion of the pairs plot, we can se
 ggplot(spotify, aes(x = Genre, y = Popularity)) + 
   geom_boxplot(fill = "darkgreen") + 
   labs(title = "Popularity across Genres")
+
+# maybe also do a test??
 ```
 
-Taking a look across genre, one clear trend seems to be that indie songs are less popular than those of the other genres. Hip-hop appears to have the highest median popularity across the genres, but with some clear skew left it is hard to judge any clear differences between the non-indie genres.
+Taking a look across genre, one clear trend seems to be that indie songs are less popular than those of the other genres. Indie's second and third quartile range from around 30 to 45, where all other genre's 25th percentile are above 45. Hip-hop appears to have the highest median popularity across the genres, but with some clear skew left so that its inner two quartiles overlap heavily with all non-indie genres. Overall, it is hard to judge any clear differences between the non-indie genres, but indie music is definitely less popular.
 
-
-
+If we want to look into what artists seem to have different ratings a popularity, one option is create two word clouds split on rating popularity. To make the two word clouds around equal in terms of amount of data, the less popular one has artists of songs with popularity less than or equal to 60 while the popular one has popularity greater than 60.
 
 ```{r, warning = FALSE, message = FALSE}
 ######### ARTIST NAME WORDCLOUD #########
@@ -305,7 +305,7 @@ wordcloud(words = pop_artists.words, freq = pop_artists.freqs,
 title(main = "Artists of More Popular Songs")
 ```
 
-Above word cloud answers the question: which artists are the most popular? / Do particular artists make songs that are more popular?
+At immediate notice, we see there does not really seem to be a difference between the two word clouds.
 
 
 ## Question 3: Examining Time Trends
