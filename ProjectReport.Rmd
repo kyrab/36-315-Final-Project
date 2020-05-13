@@ -1,7 +1,8 @@
 ---
-title: "35-315 Final Project Report"
+title: "A Visual Analysis of Top Spotify Song Data"
+subtitle: "35-315 Final Project Report"
 author: "Kyra Balenzano, Evan Feder, David Yuan"
-date: "5/2/2020"
+date: "5/13/2020"
 output:
   pdf_document
   #html_document:
@@ -247,7 +248,7 @@ ggpairs(data = spotify, columns = (6:15),
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
 
-This pairs plot is incredibly messy. What we are really looking for is correlation between just Population and other individual variables.
+The pairs plot (Figure 3) is incredibly messy. What we are really looking for is correlation between just Population and other individual variables.
 
 \begin{table}[]
 \centering
@@ -267,7 +268,7 @@ Valence  & Duration & Acousticness & Speechiness &          \\ \cline{1-4}
 #kable(t(correls), col.names = names)
 ```
 
-After isolating the correlation coefficient portion of the pairs plot, we can see how correlated Popularity is with the quantitative variables. As the magnitude of all of these correlation coefficients are under $0.20$, we can state that Popularity is not associated with any of these quantitative variables.
+After isolating the correlation coefficient portion of the pairs plot, we can see how correlated Popularity is with the quantitative variables. These results are shown in Table 1. As the magnitude of all of these correlation coefficients are under $0.20$, we can state that Popularity is not associated with any of these quantitative variables.
 
 ```{r, fig.align = "center", fig.width = 6, fig.height = 3.5}
 ggplot(spotify, aes(x = Genre, y = Popularity)) + 
