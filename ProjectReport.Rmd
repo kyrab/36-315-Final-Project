@@ -1,6 +1,6 @@
 ---
 title: "A Visual Analysis of Top Spotify Song Data"
-subtitle: "35-315 Final Project Report"
+subtitle: "36-315 Final Project Report"
 author: "Kyra Balenzano, Evan Feder, David Yuan"
 date: "5/13/2020"
 output:
